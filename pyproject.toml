@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Production-ready test automation framework for russia-tv.online"
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
 authors = [
     { name = "Kadyrov Yhtyyar" }
 ]
@@ -40,6 +39,7 @@ dev = [
     "pre-commit>=3.7",
     "types-python-dateutil",
     "types-pyyaml",
+    "pytest-cov>=5.0",
 ]
 
 [tool.ruff]

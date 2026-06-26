@@ -70,6 +70,14 @@ class HomePage(BasePage):
         await self.fill(self._SEARCH_INPUT, query)
         await self.page.press(self._SEARCH_INPUT, "Enter")
 
+    async def is_search_visible(self) -> bool:
+        """Check if search input is visible.
+
+        Returns:
+            True if search input is visible.
+        """
+        return await self.is_element_visible(self._SEARCH_INPUT)
+
     async def click_load_more(self) -> None:
         """Click 'Load more' button if present."""
         if await self.is_element_visible(self._LOAD_MORE):

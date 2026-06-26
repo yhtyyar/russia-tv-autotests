@@ -25,6 +25,8 @@ jobs:
         run: uv run ruff check .
       - name: Run MyPy
         run: uv run mypy .
+      - name: Run Bandit
+        run: uv run bandit -r api/ core/ pages/ utils/ config/
 
   unit-tests:
     runs-on: ubuntu-latest
