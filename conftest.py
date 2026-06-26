@@ -1,0 +1,78 @@
+"""Pytest fixtures and configuration."""
+
+import os
+from collections.abc import AsyncGenerator
+
+import pytest
+import pytest_asyncio
+from playwright.async_api import Browser, BrowserContext, Page, Playwright, async_playwright
+
+from config.settings import get_settings
+from core.browser_manager import BrowserManager
+
+
+@pytest.fixture(scope="session")
+def settings():
+    """Provide project settings."""
+    return get_settings()
+
+
+@pytest_asyncio.fixture
+async def playwright_instance() -> AsyncGenerator[Playwright, None]:
+    """Provide Playwright instance for the test."""
+    async with async_playwright() as pw:
+        yield pw
+
+
+@pytest_asyncio.fixture
+async def browser(playwright_instance: Playwright) -> AsyncGenerator[Browser, None]:
+    """Provide launched browser for the test session."""
+    from config.browsers import launch_browser
+
+    s = get_settings()
+    browser_type = getattr(playwright_instance, s.browser, playwright_instance.chromium)
+    b = await launch_browser(
+        browser_type=browser_type,
+        headless=s.headless,
+        slow_mo=s.slow_mo,
+    )
+    yield b
+    await b.close()
+
+
+@pytest_asyncio.fixture
+async def context(browser: Browser) -> AsyncGenerator[BrowserContext, None]:
+    """Provide fresh browser context for each test."""
+    ctx = await browser.new_context(
+        viewport={"width": 1920, "height": 1080},
+    )
+    yield ctx
+    await ctx.close()
+
+
+@pytest_asyncio.fixture
+async def page(context: BrowserContext) -> AsyncGenerator[Page, None]:
+    """Provide fresh page for each test."""
+    p = await context.new_page()
+    yield p
+    await p.close()
+
+
+@pytest_asyncio.fixture
+async def browser_manager(
+    playwright_instance: Playwright,
+) -> AsyncGenerator[BrowserManager, None]:
+    """Provide BrowserManager for direct control."""
+    manager = BrowserManager(playwright_instance)
+    try:
+        yield manager
+    finally:
+        await manager.close()
+
+
+@pytest.fixture(autouse=True)
+def _env_setup():
+    """Ensure required directories exist before each test."""
+    os.makedirs("reports/allure-results", exist_ok=True)
+    os.makedirs("reports/screenshots", exist_ok=True)
+    os.makedirs("reports/html-report", exist_ok=True)

@@ -1,0 +1,90 @@
+[project]
+name = "russia-tv-tests"
+version = "0.1.0"
+description = "Production-ready test automation framework for russia-tv.online"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "QA Automation Team" }
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-html>=4.1",
+    "pytest-check>=2.2",
+    "pytest-xdist>=3.6",
+    "playwright>=1.44",
+    "httpx>=0.27",
+    "jsonschema>=4.22",
+    "python-dotenv>=1.0",
+    "allure-pytest>=2.13",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "bandit>=1.7",
+    "pre-commit>=3.7",
+    "types-python-dateutil",
+    "types-pyyaml",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM", "TID", "TCH", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--alluredir=reports/allure-results",
+]
+markers = [
+    "unit: Unit tests (fastest)",
+    "integration: Integration/API tests",
+    "e2e: End-to-end browser tests (slowest)",
+    "smoke: Critical smoke tests",
+    "flaky: Known flaky tests",
+    "slow: Tests that take > 30s",
+    "cross_browser: Tests to run on multiple browsers",
+    "responsive: Responsive design tests",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
