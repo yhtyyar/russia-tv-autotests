@@ -29,7 +29,7 @@ class HomePage(BasePage):
             timeout=timeout,
         )
 
-    async def get_visible_channels(self) -> list[dict]:
+    async def get_visible_channels(self) -> list[dict[str, str]]:
         """Get list of visible channel cards.
 
         Returns:

@@ -2,6 +2,7 @@
 
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any
 
 from playwright.async_api import Browser, BrowserContext, Page, Playwright
 
@@ -40,7 +41,7 @@ class BrowserManager:
         )
         return self._browser
 
-    async def new_context(self, **kwargs) -> BrowserContext:
+    async def new_context(self, **kwargs: Any) -> BrowserContext:
         """Create new browser context.
 
         Args:
@@ -48,17 +49,21 @@ class BrowserManager:
 
         Returns:
             New BrowserContext.
+
+        Raises:
+            RuntimeError: If browser failed to launch.
         """
         if self._browser is None:
             await self.launch()
-        assert self._browser is not None
+        if self._browser is None:
+            raise RuntimeError("Browser failed to launch")
         return await self._browser.new_context(
             viewport={"width": 1920, "height": 1080},
             record_video_dir="reports/videos" if kwargs.pop("record_video", False) else None,
             **kwargs,
         )
 
-    async def new_page(self, **kwargs) -> Page:
+    async def new_page(self, **kwargs: Any) -> Page:
         """Create new page in fresh context.
 
         Args:
@@ -99,7 +104,7 @@ async def managed_browser(
 @asynccontextmanager
 async def managed_page(
     playwright: Playwright,
-    **kwargs,
+    **kwargs: Any,
 ) -> AsyncGenerator[Page, None]:
     """Context manager for a single page lifecycle.
 

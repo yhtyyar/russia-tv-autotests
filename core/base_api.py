@@ -1,10 +1,15 @@
 """Base API client with common HTTP operations."""
 
-from typing import Any
+import json
+import logging
+from typing import Any, cast
 
 import httpx
 
 from config.settings import get_settings
+from core.exceptions import APIError
+
+logger = logging.getLogger(__name__)
 
 
 class BaseAPI:
@@ -36,7 +41,7 @@ class BaseAPI:
         path = endpoint if endpoint.startswith("/") else f"/{endpoint}"
         return f"{base}{path}"
 
-    async def _get_client(self) -> httpx.AsyncClient:
+    def _get_client(self) -> httpx.AsyncClient:
         """Get or create httpx client.
 
         Returns:
@@ -65,10 +70,27 @@ class BaseAPI:
 
         Returns:
             HTTP response.
+
+        Raises:
+            APIError: On HTTP status errors or network failures.
         """
-        client = await self._get_client()
+        client = self._get_client()
         url = self._resolve_url(endpoint) if self._client else endpoint
-        return await client.get(url, params=params, headers=headers)
+        try:
+            response = await client.get(url, params=params, headers=headers)
+            response.raise_for_status()
+            return response
+        except httpx.HTTPStatusError as exc:
+            logger.exception(
+                "API HTTP error: %s - %s", exc.response.status_code, exc.response.text
+            )
+            raise APIError(
+                f"HTTP error {exc.response.status_code} for {url}",
+                status_code=exc.response.status_code,
+            ) from exc
+        except httpx.RequestError as exc:
+            logger.exception("API request error: %s", exc)
+            raise APIError(f"Request error for {url}: {exc}") from exc
 
     async def post(
         self,
@@ -87,15 +109,32 @@ class BaseAPI:
 
         Returns:
             HTTP response.
+
+        Raises:
+            APIError: On HTTP status errors or network failures.
         """
-        client = await self._get_client()
+        client = self._get_client()
         url = self._resolve_url(endpoint) if self._client else endpoint
-        return await client.post(
-            url,
-            data=data,
-            json=json_data,
-            headers=headers,
-        )
+        try:
+            response = await client.post(
+                url,
+                data=data,
+                json=json_data,
+                headers=headers,
+            )
+            response.raise_for_status()
+            return response
+        except httpx.HTTPStatusError as exc:
+            logger.exception(
+                "API HTTP error: %s - %s", exc.response.status_code, exc.response.text
+            )
+            raise APIError(
+                f"HTTP error {exc.response.status_code} for {url}",
+                status_code=exc.response.status_code,
+            ) from exc
+        except httpx.RequestError as exc:
+            logger.exception("API request error: %s", exc)
+            raise APIError(f"Request error for {url}: {exc}") from exc
 
     def validate_json_response(self, response: httpx.Response) -> dict[str, Any]:
         """Validate response is valid JSON.
@@ -107,6 +146,10 @@ class BaseAPI:
             Parsed JSON as dictionary.
 
         Raises:
-            json.JSONDecodeError: If response body is not valid JSON.
+            APIError: If response body is not valid JSON.
         """
-        return response.json()
+        try:
+            return cast("dict[str, Any]", response.json())
+        except json.JSONDecodeError as exc:
+            logger.exception("Invalid JSON in response: %s", exc)
+            raise APIError(f"Invalid JSON response: {exc}") from exc

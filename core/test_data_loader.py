@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 TEST_DATA_DIR = Path(__file__).parent.parent / "test_data"
 
@@ -22,7 +22,7 @@ def load_json(filename: str) -> dict[str, Any]:
     """
     path = TEST_DATA_DIR / filename
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        return cast("dict[str, Any]", json.load(f))
 
 
 def save_json(filename: str, data: dict[str, Any]) -> None:

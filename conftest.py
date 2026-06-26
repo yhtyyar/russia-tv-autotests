@@ -7,12 +7,12 @@ import pytest
 import pytest_asyncio
 from playwright.async_api import Browser, BrowserContext, Page, Playwright, async_playwright
 
-from config.settings import get_settings
+from config.settings import Settings, get_settings
 from core.browser_manager import BrowserManager
 
 
 @pytest.fixture(scope="session")
-def settings():
+def settings() -> Settings:
     """Provide project settings."""
     return get_settings()
 
@@ -71,7 +71,7 @@ async def browser_manager(
 
 
 @pytest.fixture(autouse=True)
-def _env_setup():
+def _env_setup() -> None:
     """Ensure required directories exist before each test."""
     os.makedirs("reports/allure-results", exist_ok=True)
     os.makedirs("reports/screenshots", exist_ok=True)

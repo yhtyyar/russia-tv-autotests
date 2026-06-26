@@ -1,6 +1,7 @@
 """Base Page Object class for Playwright pages."""
 
 from abc import ABC, abstractmethod
+from typing import Any, Literal
 
 from playwright.async_api import Page
 
@@ -33,7 +34,7 @@ class BasePage(ABC):
         """Full URL for the page."""
         return f"{self.base_url}{self.path}"
 
-    async def goto(self, **kwargs) -> None:
+    async def goto(self, **kwargs: Any) -> None:
         """Navigate to the page URL.
 
         Args:
@@ -41,7 +42,9 @@ class BasePage(ABC):
         """
         await self.page.goto(self.url, **kwargs)
 
-    async def wait_for_load(self, state: str = "networkidle") -> None:
+    async def wait_for_load(
+        self, state: Literal["load", "domcontentloaded", "networkidle"] = "networkidle"
+    ) -> None:
         """Wait for page to reach desired load state.
 
         Args:
@@ -63,7 +66,7 @@ class BasePage(ABC):
             return False
         return await element.is_visible()
 
-    async def click(self, selector: str, **kwargs) -> None:
+    async def click(self, selector: str, **kwargs: Any) -> None:
         """Click an element.
 
         Args:

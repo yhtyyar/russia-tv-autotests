@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from playwright.async_api import BrowserType
+from playwright.async_api import Browser, BrowserType
 
 
 def get_browser_launch_args(
@@ -35,7 +35,7 @@ async def launch_browser(
     browser_type: BrowserType,
     headless: bool = True,
     slow_mo: int = 0,
-):
+) -> Browser:
     """Launch a browser instance with project defaults.
 
     Args:

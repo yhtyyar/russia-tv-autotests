@@ -23,7 +23,7 @@ class SchedulePage(BasePage):
         if await self.is_element_visible(selector):
             await self.page.select_option(selector, date_str)
 
-    async def get_channel_links(self) -> list[dict]:
+    async def get_channel_links(self) -> list[dict[str, str]]:
         """Get list of channel links on schedule page.
 
         Returns:

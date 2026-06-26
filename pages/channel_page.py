@@ -30,7 +30,7 @@ class ChannelPage(BasePage):
         """
         return await self.get_text(self._CHANNEL_NAME)
 
-    async def get_programs(self) -> list[dict]:
+    async def get_programs(self) -> list[dict[str, str]]:
         """Get channel program list.
 
         Returns:
