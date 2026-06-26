@@ -1,5 +1,6 @@
 """Base Page Object class for Playwright pages."""
 
+import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Literal
 
@@ -35,12 +36,24 @@ class BasePage(ABC):
         return f"{self.base_url}{self.path}"
 
     async def goto(self, **kwargs: Any) -> None:
-        """Navigate to the page URL.
+        """Navigate to the page URL with retry on network errors.
 
         Args:
             **kwargs: Additional arguments passed to page.goto.
         """
-        await self.page.goto(self.url, **kwargs)
+        last_err = None
+        for attempt in range(1, 4):
+            try:
+                await self.page.goto(self.url, **kwargs)
+                return
+            except Exception as exc:
+                last_err = exc
+                if "ERR_NETWORK_CHANGED" in str(exc) and attempt < 3:
+                    await asyncio.sleep(0.5)
+                    continue
+                raise
+        if last_err:
+            raise last_err
 
     async def wait_for_load(
         self, state: Literal["load", "domcontentloaded", "networkidle"] = "networkidle"

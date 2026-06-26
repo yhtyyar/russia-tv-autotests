@@ -11,6 +11,16 @@ from config.settings import Settings, get_settings
 from core.browser_manager import BrowserManager
 
 
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register custom CLI options."""
+    parser.addoption(
+        "--update-baselines",
+        action="store_true",
+        default=False,
+        help="Update visual regression baseline screenshots",
+    )
+
+
 @pytest.fixture(scope="session")
 def settings() -> Settings:
     """Provide project settings."""

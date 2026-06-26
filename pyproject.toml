@@ -29,6 +29,7 @@ dependencies = [
     "allure-pytest>=2.13",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
+    "Pillow>=10.0",
 ]
 
 [project.optional-dependencies]
@@ -80,6 +81,7 @@ markers = [
     "slow: Tests that take > 30s",
     "cross_browser: Tests to run on multiple browsers",
     "responsive: Responsive design tests",
+    "visual: Visual regression screenshot tests",
 ]
 
 [tool.bandit]

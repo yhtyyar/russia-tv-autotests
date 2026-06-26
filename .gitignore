@@ -44,6 +44,7 @@ test-results/
 
 # Allure
 reports/allure-results/
+reports/allure-report/
 reports/html-report/
 allure-report/
 
