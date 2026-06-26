@@ -51,6 +51,9 @@ allure-report/
 # Screenshots
 reports/screenshots/
 
+# Playwright traces
+reports/traces/
+
 # Test data credentials
 test_data/test_credentials.json
 

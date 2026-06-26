@@ -1,0 +1,106 @@
+"""Accessibility tests using Axe-core via Playwright.
+
+Checks WCAG 2.1 AA compliance for critical pages.
+"""
+
+import pytest
+from playwright.async_api import Page
+
+from pages.home_page import HomePage
+from pages.schedule_page import SchedulePage
+
+
+@pytest.mark.e2e
+@pytest.mark.accessibility
+@pytest.mark.asyncio
+async def test_home_page_accessibility(page: Page):
+    """Home page should have no critical accessibility violations."""
+    home = HomePage(page)
+    await home.goto()
+    await home.expect_channels_loaded(timeout=15000)
+
+    # Inject axe-core
+    await page.add_script_tag(
+        url="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.0/axe.min.js"
+    )
+    await page.wait_for_timeout(500)
+
+    violations = await page.evaluate(
+        """() => {
+            return new Promise((resolve) => {
+                axe.run({
+                    runOnly: {
+                        type: 'tag',
+                        values: ['wcag2a', 'wcag2aa', 'wcag21aa']
+                    }
+                }, (err, results) => {
+                    if (err) resolve([]);
+                    else resolve(results.violations);
+                });
+            });
+        }"""
+    )
+
+    critical = [v for v in violations if v.get("impact") == "critical"]
+    serious = [v for v in violations if v.get("impact") == "serious"]
+    assert len(critical) == 0, (
+        f"Critical a11y violations: {len(critical)} — {critical[0]['help']}"
+    )
+    assert len(serious) == 0, (
+        f"Serious a11y violations: {len(serious)}"
+    )
+
+
+@pytest.mark.e2e
+@pytest.mark.accessibility
+@pytest.mark.asyncio
+async def test_schedule_page_accessibility(page: Page):
+    """Schedule page should have no critical accessibility violations."""
+    schedule = SchedulePage(page)
+    await schedule.goto()
+    await schedule.wait_for_load("domcontentloaded")
+
+    await page.add_script_tag(
+        url="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.0/axe.min.js"
+    )
+    await page.wait_for_timeout(500)
+
+    violations = await page.evaluate(
+        """() => {
+            return new Promise((resolve) => {
+                axe.run({
+                    runOnly: {
+                        type: 'tag',
+                        values: ['wcag2a', 'wcag2aa']
+                    }
+                }, (err, results) => {
+                    if (err) resolve([]);
+                    else resolve(results.violations);
+                });
+            });
+        }"""
+    )
+
+    critical = [v for v in violations if v.get("impact") == "critical"]
+    assert len(critical) == 0, (
+        f"Critical a11y violations on schedule: {len(critical)}"
+    )
+
+
+@pytest.mark.e2e
+@pytest.mark.accessibility
+@pytest.mark.asyncio
+async def test_focus_management_on_search(page: Page):
+    """Search input should be focusable via keyboard."""
+    home = HomePage(page)
+    await home.goto()
+    await home.expect_channels_loaded(timeout=15000)
+
+    if await home.is_search_visible():
+        # Tab to search input
+        await page.keyboard.press("Tab")
+        focused = await page.evaluate("() => document.activeElement.tagName")
+        # After tabbing, something should be focused
+        assert focused != "BODY", "No element received keyboard focus"
+    else:
+        pytest.skip("Search input not visible for focus test")

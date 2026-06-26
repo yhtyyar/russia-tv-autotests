@@ -45,14 +45,22 @@ russia-tv-tests/
 
 ## Test Suite Analysis
 
-| Suite | Files | Tests | Duration | Purpose |
-|-------|-------|-------|----------|---------|
-| **Smoke** | 1 | 4 | ~30s | Critical paths: site 200, channels load, schedule loads, search visible |
-| **Unit** | 2 | 18 | < 1s | Pure logic: date helpers, exception hierarchy |
-| **Integration** | 5 | 15 | ~10s | HTTP contracts: site availability (4 passed), API endpoints (11 xfail) |
-| **E2E** | 4 | 11 | ~60s | Browser automation: home, schedule, filtering, responsive, visual regression |
+| Suite | Files | Tests | Duration | Purpose | Technique |
+|-------|-------|-------|----------|---------|-----------|
+| **Smoke** | 1 | 4 | ~30s | Critical paths | — |
+| **Unit** | 2 | 18 | < 1s | Pure logic | — |
+| **Integration** | 6 | 19 | ~12s | HTTP contracts, performance | Boundary Value Analysis |
+| **E2E** | 8 | 30 | ~90s | Browser automation | Equivalence Partitioning, State-Transition, Error Guessing |
 
-**Total**: 33 tests executed (22 pass, 11 xfail expected due to SSR architecture).
+**Total**: 41 tests (30 pass, 11 xfail expected due to SSR architecture).
+
+### Applied Test Design Techniques
+
+1. **Equivalence Partitioning** — Search input divided into valid/invalid classes (empty, 1 char, normal, XSS, SQL injection, special chars, Unicode)
+2. **Boundary Value Analysis** — Performance budgets (2.0s/2.5s thresholds), API response time limits
+3. **State-Transition Testing** — Navigation flow: Home ↔ Schedule ↔ Channel Detail with back/reload
+4. **Error Guessing** — 404 pages, invalid URL params, offline simulation, slow 3G network
+5. **Pairwise / Decision Table** — Responsive viewports (mobile 375×667, tablet 768×1024, desktop 1920×1080)
 
 ### Markers
 
@@ -62,6 +70,11 @@ russia-tv-tests/
 - `@pytest.mark.e2e` — Browser automation tests
 - `@pytest.mark.visual` — Screenshot comparison (requires baselines)
 - `@pytest.mark.responsive` — Mobile/tablet viewport tests
+- `@pytest.mark.error_handling` — 404, offline, invalid input tests
+- `@pytest.mark.state_transition` — Navigation flow tests
+- `@pytest.mark.performance` — Page load time budgets
+- `@pytest.mark.accessibility` — WCAG / keyboard focus tests
+- `@pytest.mark.flaky` — Known unstable tests (retry enabled)
 - `@pytest.mark.slow` — Tests > 30 seconds
 
 ## Setup
@@ -104,6 +117,24 @@ make visual-update
 # Full regression suite (unit + integration + e2e, no visual)
 make regression
 
+# Regression with automatic retry for flaky tests
+make regression-flaky
+
+# Error handling and edge cases
+make error
+
+# State-transition navigation tests
+make state
+
+# Performance budget tests
+make perf
+
+# Accessibility (WCAG) tests
+make a11y
+
+# E2E with Playwright tracing for failed tests
+make e2e-trace
+
 # Quick validation before commit (unit + integration)
 make test
 
@@ -145,6 +176,18 @@ Reports are written to:
 - `reports/allure-results/` — raw test result data
 - `reports/allure-report/` — generated HTML pages (after `make allure-html`)
 - `reports/screenshots/` — screenshots captured during test execution
+
+### Playwright Tracing
+
+For debugging failed E2E tests, record full Playwright traces:
+
+```bash
+# Run E2E with tracing enabled (saves .zip for each failed test)
+make e2e-trace
+
+# Traces are saved to reports/traces/<test_name>.zip
+# Open with: npx playwright show-trace reports/traces/<name>.zip
+```
 
 ### Coverage Report
 

@@ -30,6 +30,7 @@ dependencies = [
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "Pillow>=10.0",
+    "pytest-rerunfailures>=14.0",
 ]
 
 [project.optional-dependencies]
@@ -82,6 +83,10 @@ markers = [
     "cross_browser: Tests to run on multiple browsers",
     "responsive: Responsive design tests",
     "visual: Visual regression screenshot tests",
+    "error_handling: Error and edge case tests",
+    "state_transition: Navigation state machine tests",
+    "performance: Performance budget tests",
+    "accessibility: WCAG / a11y tests",
 ]
 
 [tool.bandit]

@@ -19,6 +19,12 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=False,
         help="Update visual regression baseline screenshots",
     )
+    parser.addoption(
+        "--tracing",
+        action="store_true",
+        default=False,
+        help="Record Playwright traces for failed E2E tests",
+    )
 
 
 @pytest.fixture(scope="session")
@@ -51,12 +57,21 @@ async def browser(playwright_instance: Playwright) -> AsyncGenerator[Browser, No
 
 
 @pytest_asyncio.fixture
-async def context(browser: Browser) -> AsyncGenerator[BrowserContext, None]:
-    """Provide fresh browser context for each test."""
+async def context(
+    browser: Browser, request: pytest.FixtureRequest
+) -> AsyncGenerator[BrowserContext, None]:
+    """Provide fresh browser context for each test with optional tracing."""
+    tracing_enabled = request.config.getoption("--tracing")
     ctx = await browser.new_context(
         viewport={"width": 1920, "height": 1080},
     )
+    if tracing_enabled:
+        await ctx.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield ctx
+    if tracing_enabled and request.node.rep_call.failed:
+        trace_path = f"reports/traces/{request.node.name}.zip"
+        os.makedirs("reports/traces", exist_ok=True)
+        await ctx.tracing.stop(path=trace_path)
     await ctx.close()
 
 
