@@ -1,6 +1,22 @@
 """Page Object главной страницы russia-tv.online."""
 
+from typing import TypedDict
+
 from core.base_page import BasePage
+
+
+class ChannelInfo(TypedDict):
+    """Информация о видимом канале."""
+
+    name: str
+    program: str
+
+
+class FooterLinkInfo(TypedDict):
+    """Информация о ссылке в футере."""
+
+    text: str
+    href: str
 
 
 class HomePage(BasePage):
@@ -37,14 +53,14 @@ class HomePage(BasePage):
             timeout=timeout,
         )
 
-    async def get_visible_channels(self) -> list[dict[str, str]]:
+    async def get_visible_channels(self) -> list[ChannelInfo]:
         """Получить список видимых карточек каналов.
 
         Returns:
-            Список словарей с данными каналов.
+            Список ChannelInfo с данными каналов.
         """
         cards = await self.page.query_selector_all(self._CHANNEL_CARDS)
-        channels = []
+        channels: list[ChannelInfo] = []
         for card in cards:
             text = await card.inner_text() or ""
             lines = [line.strip() for line in text.split("\n") if line.strip()]
@@ -129,14 +145,14 @@ class HomePage(BasePage):
         """Клик по кнопке принятия cookie."""
         await self.click(self._COOKIE_ACCEPT)
 
-    async def get_footer_links(self) -> list[dict[str, str]]:
+    async def get_footer_links(self) -> list[FooterLinkInfo]:
         """Получить все ссылки футера с текстом и href.
 
         Returns:
-            Список словарей с ключами 'text' и 'href'.
+            Список FooterLinkInfo с ключами 'text' и 'href'.
         """
         links = await self.page.query_selector_all(self._FOOTER_LINKS)
-        result = []
+        result: list[FooterLinkInfo] = []
         for link in links:
             text = await link.text_content() or ""
             href = await link.get_attribute("href") or ""
