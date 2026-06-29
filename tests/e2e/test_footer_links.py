@@ -7,6 +7,7 @@
 """
 
 import pytest
+import pytest_check as check
 from playwright.async_api import Page
 
 from pages.channel_page import ChannelPage
@@ -53,7 +54,7 @@ async def test_footer_links_have_valid_href(page: Page):
         pytest.skip("No footer links found")
 
     for link in links:
-        assert link["href"], f"Footer link '{link['text']}' has empty href"
+        check.is_not_none(link["href"], msg=f"Footer link '{link['text']}' has empty href")
 
 
 @pytest.mark.e2e

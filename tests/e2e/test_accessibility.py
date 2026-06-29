@@ -7,6 +7,7 @@ import os
 import warnings
 
 import pytest
+import pytest_check as check
 from playwright.async_api import Page
 
 from pages.home_page import HomePage
@@ -49,12 +50,7 @@ async def test_home_page_accessibility(page: Page):
 
     critical = [v for v in violations if v.get("impact") == "critical"]
     serious = [v for v in violations if v.get("impact") == "serious"]
-    if serious:
-        warnings.warn(
-            f"Serious a11y violations: {len(serious)}",
-            UserWarning,
-            stacklevel=2,
-        )
+    check.equal(len(serious), 0, msg=f"Serious a11y violations: {len(serious)}")
     assert len(critical) == 0, (
         f"Critical a11y violations: {len(critical)} — {critical[0]['help']}"
     )
