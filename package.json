@@ -1,0 +1,28 @@
+{
+  "name": "russia-tv-autotests",
+  "version": "1.0.0",
+  "description": "Профессиональный фреймворк автоматизированного тестирования для [russia-tv.online](https://russia-tv.online/) — телепрограммы на Nuxt.js SPA.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yhtyyar/russia-tv-autotests.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yhtyyar/russia-tv-autotests/issues"
+  },
+  "homepage": "https://github.com/yhtyyar/russia-tv-autotests#readme",
+  "devDependencies": {
+    "axe-core": "^4.12.1"
+  }
+}

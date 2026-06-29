@@ -3,6 +3,7 @@
 Проверяет соответствие WCAG 2.1 AA для критических страниц.
 """
 
+import os
 import warnings
 
 import pytest
@@ -25,10 +26,9 @@ async def test_home_page_accessibility(page: Page):
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
 
-    # Inject axe-core
-    await page.add_script_tag(
-        url="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.0/axe.min.js"
-    )
+    # Inject axe-core from local npm package
+    axe_path = os.path.join(os.path.dirname(__file__), "../../node_modules/axe-core/axe.min.js")
+    await page.add_script_tag(path=axe_path)
     await page.wait_for_function("() => typeof axe !== 'undefined'")
 
     violations = await page.evaluate(
@@ -73,9 +73,8 @@ async def test_schedule_page_accessibility(page: Page):
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
 
-    await page.add_script_tag(
-        url="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.0/axe.min.js"
-    )
+    axe_path = os.path.join(os.path.dirname(__file__), "../../node_modules/axe-core/axe.min.js")
+    await page.add_script_tag(path=axe_path)
     await page.wait_for_function("() => typeof axe !== 'undefined'")
 
     violations = await page.evaluate(
