@@ -1,210 +1,243 @@
 # russia-tv-tests
 
-Professional test automation framework for [russia-tv.online](https://russia-tv.online/) — a Nuxt.js SPA TV guide platform.
+Профессиональный фреймворк автоматизированного тестирования для [russia-tv.online](https://russia-tv.online/) — телепрограммы на Nuxt.js SPA.
 
-Built as a portfolio project demonstrating production-grade QA engineering practices: async architecture, Page Object Model, CI/CD with matrix testing, security scanning, and comprehensive reporting.
+Проект создан для демонстрации production-практик QA-инженерии: асинхронная архитектура, Page Object Model, CI/CD с матричным тестированием, security-сканирование и комплексная отчётность.
 
-## Tech Stack
+## Технологический стек
 
-- **Language**: Python 3.12
-- **Test Runner**: pytest + pytest-asyncio
-- **Browser Automation**: Playwright (async)
-- **HTTP Client**: httpx
-- **Configuration**: Pydantic Settings
-- **Reporting**: Allure + pytest-html
-- **Linting**: Ruff, MyPy (strict), Bandit
-- **CI/CD**: GitHub Actions (triggered manually by push/PR only)
+- **Язык**: Python 3.12
+- **Тестовый раннер**: pytest + pytest-asyncio
+- **Браузерная автоматизация**: Playwright (async)
+- **HTTP-клиент**: httpx
+- **Конфигурация**: Pydantic Settings
+- **Отчётность**: Allure + pytest-html
+- **Линтинг**: Ruff, MyPy (strict), Bandit
+- **CI/CD**: GitHub Actions (только по push/PR)
 
-## Architecture
+## Архитектура
 
 ```
 russia-tv-tests/
-├── config/          # Environment configs, browser launch args, Pydantic settings
-├── core/            # BasePage, BaseAPI, BrowserManager, custom exceptions
-├── pages/           # Page Objects + components (Home, Schedule, Channel, Category, Navigation)
-├── api/             # Async API clients (Channel, Schedule, Search)
+├── config/          # Конфиги окружения, аргументы запуска браузера, Pydantic settings
+├── core/            # BasePage, BrowserManager, кастомные исключения
+├── pages/           # Page Objects + компоненты (Home, Schedule, Channel, Category, Navigation)
 ├── tests/
-│   ├── smoke/       # Fast critical-path validation (< 2 min)
-│   ├── unit/        # Fast isolated tests (date helpers, utilities, exceptions)
-│   ├── integration/ # HTTP contract & site availability tests
-│   └── e2e/         # Browser critical paths, responsive design, visual regression
-├── utils/           # Screenshot capture, date formatting, image diff
-├── test_data/       # JSON test data
-└── reports/         # Allure results, screenshots, HTML reports
+│   ├── smoke/       # Быстрая проверка критических путей (< 2 мин)
+│   ├── unit/        # Изолированные тесты (дата-хелперы, утилиты, исключения)
+│   ├── integration/ # Доступность сайта и performance budget
+│   └── e2e/         # Браузерные тесты, адаптивность, визуальная регрессия, тёмная тема, SEO
+├── utils/           # Скриншоты, форматирование дат, сравнение изображений
+├── test_data/       # JSON тестовые данные
+└── reports/         # Allure-результаты, скриншоты, HTML-отчёты
 ```
 
-## Key Design Decisions
+## Ключевые архитектурные решения
 
-1. **Async-first**: All browser and API interactions use `async/await` for performance
-2. **Type Safety**: Full type annotations, MyPy strict mode enabled
-3. **Error Handling**: Custom domain exceptions (`APIError`, `BrowserError`) with structured logging
-4. **SOLID**: Each class has single responsibility; no God-classes
-5. **Security**: Bandit SAST scanning in CI; no secrets in repository
-6. **Observability**: Allure reporting with screenshots on failure
-7. **CI/CD on demand**: No nightly cron — runs only on push/PR to save GitHub Actions minutes
+1. **Async-first**: Все взаимодействия с браузером через `async/await` для производительности
+2. **Type Safety**: Полная типизация, MyPy strict mode включён
+3. **Обработка ошибок**: Кастомные доменные исключения (`APIError`, `BrowserError`) со структурированным логированием
+4. **SOLID**: У каждого класса одна ответственность; нет God-классов
+5. **Безопасность**: Bandit SAST-сканирование в CI; секретов в репозитории нет
+6. **Наблюдаемость**: Allure-отчёты со скриншотами при падении
+7. **CI/CD по требованию**: Нет ночных запусков — только по push/PR для экономии GitHub Actions
 
-## Test Suite Analysis
+## Анализ тестового набора
 
-| Suite | Files | Tests | Duration | Purpose | Technique |
-|-------|-------|-------|----------|---------|-----------|
-| **Smoke** | 1 | 4 | ~30s | Critical paths | — |
-| **Unit** | 2 | 18 | < 1s | Pure logic | — |
-| **Integration** | 6 | 19 | ~12s | HTTP contracts, performance | Boundary Value Analysis |
-| **E2E** | 8 | 30 | ~90s | Browser automation | Equivalence Partitioning, State-Transition, Error Guessing |
+| Набор | Файлы | Тесты | Длительность | Назначение | Техника |
+|-------|-------|-------|--------------|------------|---------|
+| **Smoke** | 1 | 4 | ~30s | Критические пути | — |
+| **Unit** | 2 | 18 | < 1s | Чистая логика | — |
+| **Integration** | 2 | 7 | ~10s | Доступность сайта, performance budget | Граничные значения |
+| **E2E** | 15 | 55+ | ~120s | Браузерная автоматизация, UX, SEO, a11y | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
 
-**Total**: 41 tests (30 pass, 11 xfail expected due to SSR architecture).
+**Итого**: 80+ тестов, покрывающих только внешние пользовательские сценарии.
 
-### Applied Test Design Techniques
+### Применённые техники дизайна тестов
 
-1. **Equivalence Partitioning** — Search input divided into valid/invalid classes (empty, 1 char, normal, XSS, SQL injection, special chars, Unicode)
-2. **Boundary Value Analysis** — Performance budgets (2.0s/2.5s thresholds), API response time limits
-3. **State-Transition Testing** — Navigation flow: Home ↔ Schedule ↔ Channel Detail with back/reload
-4. **Error Guessing** — 404 pages, invalid URL params, offline simulation, slow 3G network
-5. **Pairwise / Decision Table** — Responsive viewports (mobile 375×667, tablet 768×1024, desktop 1920×1080)
+1. **Эквивалентное разбиение** — Поисковый ввод разделён на валидные/невалидные классы (пустой, 1 символ, нормальный, XSS, SQL injection, спецсимволы, Unicode)
+2. **Анализ граничных значений** — Performance budget (пороги 2.0s/2.5s), лимиты времени ответа API
+3. **Тестирование диаграммы состояний** — Навигация: Главная ↔ Расписание ↔ Карточка канала с возвратом и перезагрузкой
+4. **Предугадывание ошибок** — 404-страницы, невалидные URL-параметры, офлайн-режим, медленная сеть 3G
+5. **Попарное тестирование / Таблица решений** — Адаптивные вьюпорты (мобильный 375×667, планшет 768×1024, десктоп 1920×1080)
 
-### Markers
+### Маркеры
 
-- `@pytest.mark.smoke` — Fast sanity check before deeper regression
-- `@pytest.mark.unit` — Isolated logic tests
-- `@pytest.mark.integration` — HTTP/API tests
-- `@pytest.mark.e2e` — Browser automation tests
-- `@pytest.mark.visual` — Screenshot comparison (requires baselines)
-- `@pytest.mark.responsive` — Mobile/tablet viewport tests
-- `@pytest.mark.error_handling` — 404, offline, invalid input tests
-- `@pytest.mark.state_transition` — Navigation flow tests
-- `@pytest.mark.performance` — Page load time budgets
-- `@pytest.mark.accessibility` — WCAG / keyboard focus tests
-- `@pytest.mark.flaky` — Known unstable tests (retry enabled)
-- `@pytest.mark.slow` — Tests > 30 seconds
+- `@pytest.mark.smoke` — Быстрая sanity-проверка перед глубокой регрессией
+- `@pytest.mark.unit` — Изолированные тесты логики
+- `@pytest.mark.integration` — Интеграционные тесты
+- `@pytest.mark.e2e` — Браузерная автоматизация
+- `@pytest.mark.visual` — Сравнение скриншотов (требуются базовые)
+- `@pytest.mark.responsive` — Тесты на мобильные/планшетные вьюпорты
+- `@pytest.mark.error_handling` — 404, офлайн, невалидный ввод
+- `@pytest.mark.state_transition` — Тесты навигационных потоков
+- `@pytest.mark.performance` — Бюджеты времени загрузки страниц
+- `@pytest.mark.accessibility` — WCAG / фокус с клавиатуры
+- `@pytest.mark.flaky` — Известные нестабильные тесты (retry включён)
+- `@pytest.mark.slow` — Тесты > 30 секунд
+- `@pytest.mark.dark_mode` — Тесты переключения темы
+- `@pytest.mark.cookie` — Тесты cookie-баннера
+- `@pytest.mark.seo` — Тесты meta-тегов и SEO
+- `@pytest.mark.footer` — Тесты ссылок в футере
+- `@pytest.mark.load_more` — Тесты пагинации / «Показать ещё»
+- `@pytest.mark.empty_state` — Тесты пустых состояний
 
-## Setup
+## Установка
 
 ```bash
-# Install dependencies and browsers
+# Установка зависимостей и браузеров
 make install
 
-# Or manually:
+# Или вручную:
 uv sync --extra dev
 uv run playwright install
 
-# Create environment file
+# Создать файл окружения
 cp .env.example .env
 ```
 
-## Running Tests
+## Запуск тестов
 
-All commands are available via `Makefile`:
+Все команды доступны через `Makefile`:
 
 ```bash
-# Quick sanity check — smoke tests only (< 2 min)
+# Быстрая sanity-проверка — только smoke (< 2 мин)
 make smoke
 
-# Unit tests (fastest feedback)
+# Unit-тесты (самый быстрый фидбек)
 make unit
 
-# Integration tests (HTTP contracts)
+# Интеграционные тесты
 make integration
 
-# E2E tests (browser automation)
+# E2E-тесты (браузерная автоматизация)
 make e2e
 
-# Visual regression (requires baseline screenshots)
+# Визуальная регрессия (требуются базовые скриншоты)
 make visual
 
-# Update visual baselines after intentional UI changes
+# Обновить базовые скриншоты после запланированных изменений UI
 make visual-update
 
-# Full regression suite (unit + integration + e2e, no visual)
+# Полная регрессия (unit + integration + e2e, без визуала)
 make regression
 
-# Regression with automatic retry for flaky tests
+# Регрессия с автоматическим retry нестабильных тестов
 make regression-flaky
 
-# Error handling and edge cases
+# Обработка ошибок и граничные случаи
 make error
 
-# State-transition navigation tests
+# Тесты навигационных потоков
 make state
 
-# Performance budget tests
+# Тесты performance budget
 make perf
 
-# Accessibility (WCAG) tests
+# Accessibility (WCAG) тесты
 make a11y
 
-# E2E with Playwright tracing for failed tests
+# Тесты тёмной темы
+make dark
+
+# Тесты cookie-баннера
+make cookie
+
+# Тесты SEO и meta-тегов
+make seo
+
+# Тесты футера и навигации
+make footer
+
+# Тесты «Показать ещё» / пагинации
+make load-more
+
+# Тесты пустых состояний
+make empty
+
+# Тесты клавиатурной навигации
+make keyboard
+
+# Тесты страницы канала
+make channel
+
+# Тесты выбора даты
+make date-picker
+
+# E2E с Playwright tracing для упавших тестов
 make e2e-trace
 
-# Quick validation before commit (unit + integration)
+# Быстрая проверка перед коммитом (unit + integration)
 make test
 
-# With code coverage
+# С покрытием кода
 make coverage
 ```
 
-### Direct pytest commands
+### Прямые команды pytest
 
 ```bash
-# Run only smoke tests
+# Только smoke
 uv run pytest tests/smoke/ -v
 
-# Run everything except slow tests
+# Всё, кроме медленных
 uv run pytest -m "not slow" -v
 
-# Run specific marker combinations
+# Конкретные маркеры
 uv run pytest -m "smoke or unit" -v
 
-# Update visual regression baselines
+# Обновить базовые скриншоты визуальной регрессии
 uv run pytest tests/e2e/test_visual_regression.py -v --update-baselines
 ```
 
-## Reporting
+## Отчётность
 
 ### Allure HTML Report
 
-Generate a static HTML report (requires Allure CLI installed separately):
+Генерация статического HTML-отчёта (требуется установленный Allure CLI):
 
 ```bash
-# Generate static HTML report
+# Сгенерировать статический HTML
 make allure-html
 
-# Open interactive report in browser
+# Открыть интерактивный отчёт в браузере
 make allure
 ```
 
-Reports are written to:
-- `reports/allure-results/` — raw test result data
-- `reports/allure-report/` — generated HTML pages (after `make allure-html`)
-- `reports/screenshots/` — screenshots captured during test execution
+Отчёты пишутся в:
+- `reports/allure-results/` — сырые результаты тестов
+- `reports/allure-report/` — сгенерированные HTML-страницы (после `make allure-html`)
+- `reports/screenshots/` — скриншоты, сделанные во время выполнения
 
 ### Playwright Tracing
 
-For debugging failed E2E tests, record full Playwright traces:
+Для отладки упавших E2E-тестов записываются полные Playwright-трейсы:
 
 ```bash
-# Run E2E with tracing enabled (saves .zip for each failed test)
+# E2E с tracing (сохраняет .zip для каждого упавшего теста)
 make e2e-trace
 
-# Traces are saved to reports/traces/<test_name>.zip
-# Open with: npx playwright show-trace reports/traces/<name>.zip
+# Трейсы сохраняются в reports/traces/<test_name>.zip
+# Открыть: npx playwright show-trace reports/traces/<name>.zip
 ```
 
-### Coverage Report
+### Отчёт о покрытии
 
 ```bash
 make coverage
-# Opens: htmlcov/index.html
+# Откроет: htmlcov/index.html
 ```
 
 ## CI/CD
 
-`.github/workflows/ci.yml` runs **only on push/PR** (no nightly cron to save GitHub Actions minutes):
+`.github/workflows/ci.yml` запускается **только по push/PR** (нет ночных запусков для экономии GitHub Actions):
 
-- **Lint job**: Ruff, MyPy, Bandit
-- **Unit tests**: Fast feedback loop
-- **Integration tests**: HTTP contract validation
-- **E2E matrix**: Chromium + Firefox with artifact upload on failure
+- **Lint**: Ruff, MyPy, Bandit
+- **Unit tests**: Быстрый фидбек
+- **Integration tests**: Валидация доступности сайта
+- **E2E matrix**: Chromium + Firefox с загрузкой артефактов при падении
 
-## Author
+## Автор
 
-Kadyrov Yhtyyar — QA Automation Engineer
+**Yhtyyar** — QA Automation Engineer  
+Email: kadyrow1506@gmail.com

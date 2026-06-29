@@ -77,7 +77,7 @@ async def test_slow_network_loads(page: Page):
         },
     )
     home = HomePage(page)
-    await home.goto()
+    await home.goto(timeout=60000)
     # Should still load within reasonable time
     await home.expect_channels_loaded(timeout=45000)
     channels = await home.get_visible_channels()

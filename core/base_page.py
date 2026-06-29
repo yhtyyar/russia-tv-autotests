@@ -1,4 +1,4 @@
-"""Base Page Object class for Playwright pages."""
+"""Базовый класс Page Object для страниц Playwright."""
 
 import asyncio
 from abc import ABC, abstractmethod
@@ -10,16 +10,16 @@ from config.settings import get_settings
 
 
 class BasePage(ABC):
-    """Abstract base class for all page objects.
+    """Абстрактный базовый класс для всех page objects.
 
-    Provides common interaction methods and URL handling.
+    Предоставляет общие методы взаимодействия и работу с URL.
     """
 
     def __init__(self, page: Page) -> None:
-        """Initialize page object.
+        """Инициализация page object.
 
         Args:
-            page: Playwright Page instance.
+            page: Экземпляр Playwright Page.
         """
         self.page = page
         self.settings = get_settings()
@@ -28,18 +28,18 @@ class BasePage(ABC):
     @property
     @abstractmethod
     def path(self) -> str:
-        """URL path for the page. Override in subclasses."""
+        """URL-путь страницы. Переопределяется в подклассах."""
 
     @property
     def url(self) -> str:
-        """Full URL for the page."""
+        """Полный URL страницы."""
         return f"{self.base_url}{self.path}"
 
     async def goto(self, **kwargs: Any) -> None:
-        """Navigate to the page URL with retry on network errors.
+        """Навигация на URL страницы с retry при сетевых ошибках.
 
         Args:
-            **kwargs: Additional arguments passed to page.goto.
+            **kwargs: Дополнительные аргументы, передаваемые в page.goto.
         """
         last_err = None
         for attempt in range(1, 4):
@@ -58,21 +58,21 @@ class BasePage(ABC):
     async def wait_for_load(
         self, state: Literal["load", "domcontentloaded", "networkidle"] = "networkidle"
     ) -> None:
-        """Wait for page to reach desired load state.
+        """Ожидание достижения страницей нужного состояния загрузки.
 
         Args:
-            state: Load state to wait for (load, domcontentloaded, networkidle).
+            state: Состояние загрузки для ожидания (load, domcontentloaded, networkidle).
         """
         await self.page.wait_for_load_state(state)
 
     async def is_element_visible(self, selector: str) -> bool:
-        """Check if element is visible on the page.
+        """Проверить, виден ли элемент на странице.
 
         Args:
-            selector: CSS or XPath selector.
+            selector: CSS или XPath селектор.
 
         Returns:
-            True if element is visible, False otherwise.
+            True, если элемент виден, иначе False.
         """
         element = await self.page.query_selector(selector)
         if element is None:
@@ -80,31 +80,31 @@ class BasePage(ABC):
         return await element.is_visible()
 
     async def click(self, selector: str, **kwargs: Any) -> None:
-        """Click an element.
+        """Клик по элементу.
 
         Args:
-            selector: CSS or XPath selector.
-            **kwargs: Additional arguments passed to page.click.
+            selector: CSS или XPath селектор.
+            **kwargs: Дополнительные аргументы, передаваемые в page.click.
         """
         await self.page.click(selector, **kwargs)
 
     async def fill(self, selector: str, value: str) -> None:
-        """Fill input field.
+        """Заполнить поле ввода.
 
         Args:
-            selector: CSS or XPath selector for input.
-            value: Value to fill.
+            selector: CSS или XPath селектор для input.
+            value: Значение для заполнения.
         """
         await self.page.fill(selector, value)
 
     async def get_text(self, selector: str) -> str:
-        """Get text content of an element.
+        """Получить текстовое содержимое элемента.
 
         Args:
-            selector: CSS or XPath selector.
+            selector: CSS или XPath селектор.
 
         Returns:
-            Element text content.
+            Текстовое содержимое элемента.
         """
         element = await self.page.query_selector(selector)
         if element is None:
@@ -113,13 +113,13 @@ class BasePage(ABC):
         return text or ""
 
     async def take_screenshot(self, name: str) -> str:
-        """Take a screenshot and save to reports directory.
+        """Сделать скриншот и сохранить в директорию reports.
 
         Args:
-            name: Screenshot file name (without extension).
+            name: Имя файла скриншота (без расширения).
 
         Returns:
-            Path to saved screenshot.
+            Путь к сохранённому скриншоту.
         """
         import os
 

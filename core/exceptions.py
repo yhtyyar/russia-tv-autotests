@@ -1,48 +1,48 @@
-"""Domain-specific exceptions for the test framework."""
+"""Доменные исключения для тестового фреймворка."""
 
 
 class FrameworkError(Exception):
-    """Base exception for all framework errors."""
+    """Базовое исключение для всех ошибок фреймворка."""
 
     def __init__(self, message: str) -> None:
-        """Initialize with error message.
+        """Инициализация с сообщением об ошибке.
 
         Args:
-            message: Human-readable error description.
+            message: Человекочитаемое описание ошибки.
         """
         super().__init__(message)
         self.message = message
 
 
 class APIError(FrameworkError):
-    """Base exception for API-related errors."""
+    """Базовое исключение для ошибок API."""
 
     def __init__(self, message: str, status_code: int | None = None) -> None:
-        """Initialize with message and optional status code.
+        """Инициализация с сообщением и опциональным статус-кодом.
 
         Args:
-            message: Error description.
-            status_code: HTTP status code if applicable.
+            message: Описание ошибки.
+            status_code: HTTP статус-код, если применимо.
         """
         super().__init__(message)
         self.status_code = status_code
 
 
 class ScheduleAPIError(APIError):
-    """Error raised by Schedule API operations."""
+    """Ошибка, возникающая при операциях API расписания."""
 
 
 class ChannelAPIError(APIError):
-    """Error raised by Channel API operations."""
+    """Ошибка, возникающая при операциях API каналов."""
 
 
 class SearchAPIError(APIError):
-    """Error raised by Search API operations."""
+    """Ошибка, возникающая при операциях API поиска."""
 
 
 class BrowserError(FrameworkError):
-    """Error raised by browser operations."""
+    """Ошибка, возникающая при операциях браузера."""
 
 
 class ValidationError(FrameworkError):
-    """Error raised by data validation failures."""
+    """Ошибка, возникающая при ошибках валидации данных."""

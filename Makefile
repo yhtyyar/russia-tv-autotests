@@ -1,4 +1,4 @@
-.PHONY: install test lint format coverage clean e2e integration unit smoke visual regression allure allure-html
+.PHONY: install test lint format coverage clean e2e integration unit smoke visual regression allure allure-html dark cookie seo footer load-more empty keyboard channel date-picker
 
 install:
 	uv sync --extra dev
@@ -7,75 +7,111 @@ install:
 lint:
 	uv run ruff check .
 	uv run mypy .
-	uv run bandit -r api/ core/ pages/ utils/ config/
+	uv run bandit -r core/ pages/ utils/ config/
 
 format:
 	uv run ruff check . --fix
 	uv run ruff format .
 
-# Fast smoke tests (< 2 min)
+# Быстрые smoke-тесты (< 2 мин)
 smoke:
 	uv run pytest tests/smoke/ -v
 
-# Unit tests
+# Unit-тесты
 unit:
 	uv run pytest tests/unit/ -v
 
-# Integration tests
+# Интеграционные тесты
 integration:
 	uv run pytest tests/integration/ -v
 
-# E2E tests (browser automation)
+# E2E-тесты (браузерная автоматизация)
 e2e:
 	uv run pytest tests/e2e/ -v
 
-# Visual regression tests (requires baselines)
+# Тесты визуальной регрессии (требуются базовые скриншоты)
 visual:
 	uv run pytest tests/e2e/test_visual_regression.py -v
 
 visual-update:
 	uv run pytest tests/e2e/test_visual_regression.py -v --update-baselines
 
-# Error handling and edge cases
+# Обработка ошибок и граничные случаи
 error:
 	uv run pytest tests/e2e/test_error_pages.py -v
 
-# State-transition navigation tests
+# Тесты навигационных потоков
 state:
 	uv run pytest tests/e2e/test_state_navigation.py -v
 
-# Performance budget tests
+# Тесты performance budget
 perf:
 	uv run pytest tests/integration/test_performance_budget.py -v
 
-# Accessibility (WCAG) tests
+# Accessibility (WCAG) тесты
 a11y:
 	uv run pytest tests/e2e/test_accessibility.py -v
 
-# Full regression suite (unit + integration + e2e, excluding visual)
+# Тесты тёмной темы
+dark:
+	uv run pytest tests/e2e/test_dark_mode.py -v
+
+# Тесты cookie-баннера
+cookie:
+	uv run pytest tests/e2e/test_cookie_consent.py -v
+
+# Тесты SEO и meta-тегов
+seo:
+	uv run pytest tests/e2e/test_seo_meta.py -v
+
+# Тесты футера и навигации
+footer:
+	uv run pytest tests/e2e/test_footer_links.py -v
+
+# Тесты «Показать ещё» / пагинации
+load-more:
+	uv run pytest tests/e2e/test_load_more.py -v
+
+# Тесты пустых состояний
+empty:
+	uv run pytest tests/e2e/test_empty_states.py -v
+
+# Тесты клавиатурной навигации
+keyboard:
+	uv run pytest tests/e2e/test_keyboard_navigation.py -v
+
+# Тесты страницы канала
+channel:
+	uv run pytest tests/e2e/test_channel_detail.py -v
+
+# Тесты выбора даты
+date-picker:
+	uv run pytest tests/e2e/test_date_picker.py -v
+
+# Полная регрессия (unit + integration + e2e, без визуала)
 regression:
 	uv run pytest tests/unit/ tests/integration/ tests/e2e/ -v -m "not visual"
 
-# Regression with flaky-test retry (rerun failed up to 2 times)
+# Регрессия с retry для нестабильных тестов (до 2 повторов)
 regression-flaky:
 	uv run pytest tests/unit/ tests/integration/ tests/e2e/ -v -m "not visual" --reruns 2 --reruns-delay 1
 
-# Quick validation before commit
+# Быстрая проверка перед коммитом
 test:
 	uv run pytest tests/unit/ tests/integration/ -v
 
-# E2E with Playwright tracing for failed tests
+# E2E с Playwright tracing для упавших тестов
 e2e-trace:
 	uv run pytest tests/e2e/ -v --tracing
 
 coverage:
 	uv run pytest --cov=. --cov-report=html --cov-report=term tests/unit/ tests/integration/
 
-# Generate Allure HTML report (requires allure CLI installed)
+# Сгенерировать Allure HTML-отчёт (требуется установленный allure CLI)
 allure-html:
 	allure generate reports/allure-results -o reports/allure-report --clean
 
-# Open Allure report in browser (requires allure CLI installed)
+# Открыть Allure-отчёт в браузере (требуется установленный allure CLI)
 allure:
 	allure serve reports/allure-results
 

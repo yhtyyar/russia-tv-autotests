@@ -1,4 +1,4 @@
-"""Unit tests for date_helpers utilities."""
+"""Unit-тесты утилит date_helpers."""
 
 from datetime import date, timedelta
 
@@ -8,7 +8,7 @@ from utils.date_helpers import format_schedule_date, get_week_range, parse_time
 
 
 class TestFormatScheduleDate:
-    """Tests for format_schedule_date function."""
+    """Тесты функции format_schedule_date."""
 
     def test_today_returns_iso_date(self):
         result = format_schedule_date("today")
@@ -34,7 +34,7 @@ class TestFormatScheduleDate:
 
 
 class TestGetWeekRange:
-    """Tests for get_week_range function."""
+    """Тесты функции get_week_range."""
 
     def test_default_returns_7_days(self):
         start, end = get_week_range()
@@ -49,7 +49,7 @@ class TestGetWeekRange:
 
 
 class TestParseTime:
-    """Tests for parse_time function."""
+    """Тесты функции parse_time."""
 
     def test_hh_mm_format(self):
         dt = parse_time("14:30")

@@ -1,4 +1,4 @@
-"""Browser launch configuration helpers."""
+"""Хелперы конфигурации запуска браузера."""
 
 from typing import Any
 
@@ -9,14 +9,14 @@ def get_browser_launch_args(
     headless: bool = True,
     slow_mo: int = 0,
 ) -> dict[str, Any]:
-    """Build Playwright browser launch arguments.
+    """Сформировать аргументы запуска браузера Playwright.
 
     Args:
-        headless: Run browser in headless mode.
-        slow_mo: Slow down operations by specified milliseconds.
+        headless: Запускать браузер в headless-режиме.
+        slow_mo: Замедлить операции на указанное количество миллисекунд.
 
     Returns:
-        Dictionary of launch options for Playwright.
+        Словарь опций запуска для Playwright.
     """
     args = {
         "headless": headless,
@@ -36,15 +36,15 @@ async def launch_browser(
     headless: bool = True,
     slow_mo: int = 0,
 ) -> Browser:
-    """Launch a browser instance with project defaults.
+    """Запустить экземпляр браузера с дефолтами проекта.
 
     Args:
-        browser_type: Playwright BrowserType instance.
-        headless: Run browser in headless mode.
-        slow_mo: Slow down operations by specified milliseconds.
+        browser_type: Экземпляр Playwright BrowserType.
+        headless: Запускать браузер в headless-режиме.
+        slow_mo: Замедлить операции на указанное количество миллисекунд.
 
     Returns:
-        Launched Browser instance.
+        Запущенный экземпляр Browser.
     """
     launch_options = get_browser_launch_args(headless, slow_mo)
     return await browser_type.launch(**launch_options)

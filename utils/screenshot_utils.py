@@ -1,4 +1,4 @@
-"""Screenshot utility helpers."""
+"""Утилиты для работы со скриншотами."""
 
 import os
 from datetime import datetime
@@ -9,19 +9,19 @@ from config.settings import get_settings
 
 
 def _screenshot_dir() -> str:
-    """Return configured screenshot directory."""
+    """Вернуть настроенную директорию для скриншотов."""
     return get_settings().screenshot_dir
 
 
 async def capture_full_page(page: Page, name: str) -> str:
-    """Capture full-page screenshot.
+    """Сделать скриншот всей страницы.
 
     Args:
         page: Playwright Page.
-        name: Base name for the screenshot file.
+        name: Базовое имя файла скриншота.
 
     Returns:
-        Absolute path to saved screenshot.
+        Абсолютный путь к сохранённому скриншоту.
     """
     directory = _screenshot_dir()
     os.makedirs(directory, exist_ok=True)
@@ -33,15 +33,15 @@ async def capture_full_page(page: Page, name: str) -> str:
 
 
 async def capture_element(page: Page, selector: str, name: str) -> str:
-    """Capture screenshot of a specific element.
+    """Сделать скриншот конкретного элемента.
 
     Args:
         page: Playwright Page.
-        selector: CSS selector for the element.
-        name: Base name for the screenshot file.
+        selector: CSS-селектор элемента.
+        name: Базовое имя файла скриншота.
 
     Returns:
-        Absolute path to saved screenshot.
+        Абсолютный путь к сохранённому скриншоту.
     """
     directory = _screenshot_dir()
     os.makedirs(directory, exist_ok=True)

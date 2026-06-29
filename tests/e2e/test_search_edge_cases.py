@@ -39,17 +39,17 @@ async def test_search_equivalence_partitioning(
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
 
-    if await home.is_search_visible():
-        await home.search(query)
-        await page.wait_for_timeout(1000)
-
-        # For empty/invalid queries we expect no URL change or same page
-        current_url = page.url
-        if not should_have_results:
-            # Page should stay on home or show empty results
-            assert "search" not in current_url or home.url in current_url
-        else:
-            # Should either stay on page with results or navigate to search
-            assert home.url in current_url or "search" in current_url
-    else:
+    if not await home.is_search_visible():
         pytest.skip("Search input not visible")
+
+    await home.search(query)
+    await page.wait_for_timeout(2000)
+
+    # For empty/invalid queries we expect no URL change or same page
+    current_url = page.url
+    if not should_have_results:
+        # Page should stay on home or show empty results
+        assert "search" not in current_url or home.url in current_url
+    else:
+        # Should either stay on page with results or navigate to search
+        assert home.url in current_url or "search" in current_url

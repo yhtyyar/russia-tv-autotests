@@ -11,49 +11,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
+      - name: Установка Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install uv
+      - name: Установка uv
         uses: astral-sh/setup-uv@v3
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: uv sync --extra dev
-      - name: Run Ruff
+      - name: Запуск Ruff
         run: uv run ruff check .
-      - name: Run MyPy
+      - name: Запуск MyPy
         run: uv run mypy .
-      - name: Run Bandit
-        run: uv run bandit -r api/ core/ pages/ utils/ config/
+      - name: Запуск Bandit
+        run: uv run bandit -r core/ pages/ utils/ config/
 
   unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
+      - name: Установка Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install uv
+      - name: Установка uv
         uses: astral-sh/setup-uv@v3
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: uv sync --extra dev
-      - name: Run Unit Tests
+      - name: Запуск Unit-тестов
         run: uv run pytest tests/unit/ -v --tb=short
 
   integration-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
+      - name: Установка Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install uv
+      - name: Установка uv
         uses: astral-sh/setup-uv@v3
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: uv sync --extra dev
-      - name: Run Integration Tests
+      - name: Запуск Интеграционных тестов
         run: uv run pytest tests/integration/ -v --tb=short
         env:
           API_BASE_URL: https://russia-tv.online/api
@@ -65,28 +65,28 @@ jobs:
         browser: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
+      - name: Установка Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install uv
+      - name: Установка uv
         uses: astral-sh/setup-uv@v3
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: uv sync --extra dev
-      - name: Install Playwright browsers
+      - name: Установка браузеров Playwright
         run: uv run playwright install --with-deps ${{ matrix.browser }}
-      - name: Run E2E Tests
+      - name: Запуск E2E-тестов
         run: uv run pytest tests/e2e/ -v
         env:
           HEADLESS: true
           BROWSER: ${{ matrix.browser }}
-      - name: Upload Allure Results
+      - name: Загрузка результатов Allure
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.browser }}
           path: reports/allure-results/
-      - name: Upload Screenshots
+      - name: Загрузка скриншотов
         if: failure()
         uses: actions/upload-artifact@v4
         with:

@@ -1,8 +1,8 @@
-"""Smoke tests for critical user paths on russia-tv.online.
+"""Smoke-тесты критических пользовательских путей на russia-tv.online.
 
-These tests validate that the site is functional at a high level.
-They are designed to run fast (< 2 minutes total) and be used
-as a sanity check before deeper regression runs.
+Эти тесты проверяют работоспособность сайта на высоком уровне.
+Они рассчитаны на быстрый запуск (< 2 минуты суммарно) и используются
+как sanity-check перед глубокой регрессией.
 """
 
 import httpx
@@ -16,7 +16,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.smoke
 @pytest.mark.asyncio
 async def test_site_responds_200():
-    """Home page must return HTTP 200."""
+    """Главная страница должна возвращать HTTP 200."""
     async with httpx.AsyncClient() as client:
         response = await client.get("https://russia-tv.online/")
         assert response.status_code == 200
@@ -25,7 +25,7 @@ async def test_site_responds_200():
 @pytest.mark.smoke
 @pytest.mark.asyncio
 async def test_home_page_loads_channels(page: Page):
-    """Home page must load and display channel cards."""
+    """Главная страница должна загружаться и отображать карточки каналов."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -36,7 +36,7 @@ async def test_home_page_loads_channels(page: Page):
 @pytest.mark.smoke
 @pytest.mark.asyncio
 async def test_schedule_page_loads(page: Page):
-    """Schedule (/epg) page must load without errors."""
+    """Страница расписания (/epg) должна загружаться без ошибок."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -46,7 +46,7 @@ async def test_schedule_page_loads(page: Page):
 @pytest.mark.smoke
 @pytest.mark.asyncio
 async def test_search_input_exists(page: Page):
-    """Search input must be present and interactable on home page."""
+    """Поле поиска должно присутствовать и быть интерактивным на главной."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)

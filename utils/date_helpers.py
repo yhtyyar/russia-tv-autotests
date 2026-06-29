@@ -1,19 +1,19 @@
-"""Date formatting and manipulation utilities."""
+"""Утилиты форматирования и манипуляции датами."""
 
 from datetime import date, datetime, timedelta
 
 
 def format_schedule_date(value: str) -> str:
-    """Convert date keyword or string to ISO date format.
+    """Преобразовать ключевое слово даты или строку в ISO-формат.
 
     Args:
-        value: One of 'today', 'yesterday', 'tomorrow', or YYYY-MM-DD.
+        value: Одно из 'today', 'yesterday', 'tomorrow' или YYYY-MM-DD.
 
     Returns:
-        ISO formatted date string (YYYY-MM-DD).
+        Строка даты в ISO-формате (YYYY-MM-DD).
 
     Raises:
-        ValueError: If value format is not recognized.
+        ValueError: Если формат значения не распознан.
     """
     today = date.today()
     match value.lower():
@@ -29,19 +29,19 @@ def format_schedule_date(value: str) -> str:
                 return parsed.isoformat()
             except ValueError as exc:
                 raise ValueError(
-                    f"Invalid date format: {value}. Use 'today', 'yesterday', "
-                    f"'tomorrow', or YYYY-MM-DD."
+                    f"Неверный формат даты: {value}. Используйте 'today', 'yesterday', "
+                    f"'tomorrow' или YYYY-MM-DD."
                 ) from exc
 
 
 def get_week_range(ref_date: date | None = None) -> tuple[date, date]:
-    """Get start and end dates for a week relative to a date.
+    """Получить начальную и конечную даты недели относительно даты.
 
     Args:
-        ref_date: Reference date (defaults to today).
+        ref_date: Опорная дата (по умолчанию сегодня).
 
     Returns:
-        Tuple of (week_start, week_end) where end is 6 days after start.
+        Кортеж (week_start, week_end), где end — через 6 дней после start.
     """
     if ref_date is None:
         ref_date = date.today()
@@ -51,13 +51,13 @@ def get_week_range(ref_date: date | None = None) -> tuple[date, date]:
 
 
 def parse_time(time_str: str) -> datetime:
-    """Parse time string to datetime.
+    """Разобрать строку времени в datetime.
 
     Args:
-        time_str: Time in HH:MM or HH:MM:SS format.
+        time_str: Время в формате HH:MM или HH:MM:SS.
 
     Returns:
-        Datetime object with today's date.
+        Объект datetime с сегодняшней датой.
     """
     for fmt in ("%H:%M:%S", "%H:%M"):
         try:
@@ -69,4 +69,4 @@ def parse_time(time_str: str) -> datetime:
             )
         except ValueError:
             continue
-    raise ValueError(f"Invalid time format: {time_str}")
+    raise ValueError(f"Неверный формат времени: {time_str}")

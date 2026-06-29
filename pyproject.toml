@@ -24,7 +24,6 @@ dependencies = [
     "pytest-xdist>=3.6",
     "playwright>=1.44",
     "httpx>=0.27",
-    "jsonschema>=4.22",
     "python-dotenv>=1.0",
     "allure-pytest>=2.13",
     "pydantic>=2.7",
@@ -87,11 +86,16 @@ markers = [
     "state_transition: Navigation state machine tests",
     "performance: Performance budget tests",
     "accessibility: WCAG / a11y tests",
+    "dark_mode: Theme toggle tests",
+    "cookie: Cookie consent tests",
+    "seo: Meta tags and SEO tests",
+    "footer: Footer link tests",
+    "load_more: Pagination and load more tests",
+    "empty_state: Empty state tests",
 ]
 
 [tool.bandit]
-exclude_dirs = ["tests", "venv", ".venv"]
-
+exclude_dirs = ["tests", "venv", ".venv", "reports"]
 [tool.hatch.build.targets.wheel]
 packages = ["."]
 

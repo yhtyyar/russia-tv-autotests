@@ -1,4 +1,4 @@
-"""E2E tests for russia-tv.online home page."""
+"""E2E-тесты главной страницы russia-tv.online."""
 
 import pytest
 from playwright.async_api import Page
@@ -11,7 +11,7 @@ from utils.screenshot_utils import capture_full_page
 @pytest.mark.smoke
 @pytest.mark.asyncio
 async def test_home_page_loads_successfully(page: Page):
-    """Home page should load and display channels."""
+    """Главная страница должна загружаться и отображать каналы."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded()
@@ -26,11 +26,10 @@ async def test_home_page_loads_successfully(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_has_channel_names(page: Page):
-    """Home page should display known channel names."""
+    """Главная страница должна отображать известные названия каналов."""
     home = HomePage(page)
     await home.goto()
-    await home.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(3000)
+    await home.expect_channels_loaded(timeout=15000)
 
     channels = await home.get_visible_channels()
     names = [c["name"] for c in channels]
@@ -40,10 +39,10 @@ async def test_home_page_has_channel_names(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_search_functionality(page: Page):
-    """Search should accept input and submit."""
+    """Поиск должен принимать ввод и отправлять запрос."""
     home = HomePage(page)
     await home.goto()
-    await home.expect_channels_loaded()
+    await home.expect_channels_loaded(timeout=15000)
 
     await home.search("Первый")
     await page.wait_for_timeout(2000)
@@ -55,7 +54,7 @@ async def test_search_functionality(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_screenshot(page: Page):
-    """Capture home page screenshot for visual regression."""
+    """Сделать скриншот главной страницы для визуальной регрессии."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded()

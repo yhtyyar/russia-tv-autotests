@@ -1,42 +1,58 @@
-# Test Plan: russia-tv.online
+# Тест-план: russia-tv.online
 
-## Scope
+## Область покрытия
 
-Testing covers the online TV guide at https://russia-tv.online/ including:
-- Home page with channel grid
-- Category filtering
-- Date-based schedule navigation
-- Search functionality
-- Channel detail pages
-- Responsive design
+Тестирование охватывает онлайн-телепрограмму https://russia-tv.online/ **только с точки зрения внешнего пользователя**:
+- Главная страница с сеткой каналов
+- Фильтрация по категориям
+- Навигация по датам в расписании
+- Поиск
+- Страницы каналов
+- Адаптивный дизайн
+- Тёмная тема / переключатель
+- Cookie-согласие
+- Ссылки в футере и навигация
+- SEO meta-теги
+- «Показать ещё» / пагинация
+- Пустые состояния
+- Клавиатурная навигация и доступность
 
-## Test Levels
+## Уровни тестирования
 
-### Unit Tests
-- Date formatting utilities
-- Data model validation
-- Input validators
+### Unit-тесты
+- Утилиты форматирования дат
+- Иерархия исключений
+- Хелперы данных
 
-### Integration Tests
-- `/api/schedule` — schedule by date
-- `/api/channels` — channel lists and details
-- `/api/search` — search queries
-- JSON schema validation
+### Интеграционные тесты
+- Доступность сайта (HTTP 200, content-type)
+- Performance budget (время загрузки, cache-заголовки)
 
-### E2E Tests
-- Home page load and channel display
-- Category filter interaction
-- Date navigation (today/yesterday/tomorrow)
-- Search input and results
-- Cross-browser compatibility
-- Responsive breakpoints
+### E2E-тесты
+- Загрузка главной и отображение каналов
+- Взаимодействие с фильтрами категорий
+- Навигация по датам (сегодня/вчера/завтра)
+- Поиск и результаты (эквивалентное разбиение)
+- Кросс-браузерная совместимость
+- Адаптивные breakpoint'ы
+- Переключение тёмной темы и её сохранение
+- Cookie-баннер
+- Валидация ссылок в футере
+- SEO meta-теги
+- «Показать ещё» / пагинация
+- Пустые состояния (нет результатов, невалидная категория)
+- Клавиатурная навигация
+- Навигация по диаграмме состояний (Главная ↔ Расписание ↔ Канал)
+- Обработка ошибок (404, невалидные параметры, офлайн, медленный 3G)
+- Визуальная регрессия (сравнение скриншотов)
+- Доступность (WCAG через axe-core)
 
-## Browsers
-- Chromium (primary)
+## Браузеры
+- Chromium (основной)
 - Firefox
-- WebKit (optional)
+- WebKit (опционально)
 
-## Environments
+## Окружения
 - Production: https://russia-tv.online/
-- Staging: (configured in `config/environments.py`)
-- Dev: (configured in `config/environments.py`)
+- Staging: (настраивается в `config/environments.py`)
+- Dev: (настраивается в `config/environments.py`)

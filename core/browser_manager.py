@@ -1,4 +1,4 @@
-"""Browser lifecycle management for Playwright."""
+"""Управление жизненным циклом браузера Playwright."""
 
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -11,23 +11,23 @@ from config.settings import get_settings
 
 
 class BrowserManager:
-    """Manages Playwright browser instances, contexts and pages."""
+    """Управляет экземплярами Playwright: браузерами, контекстами и страницами."""
 
     def __init__(self, playwright: Playwright) -> None:
-        """Initialize with Playwright instance.
+        """Инициализация с экземпляром Playwright.
 
         Args:
-            playwright: Playwright async instance.
+            playwright: Асинхронный экземпляр Playwright.
         """
         self.playwright = playwright
         self.settings = get_settings()
         self._browser: Browser | None = None
 
     async def launch(self) -> Browser:
-        """Launch configured browser.
+        """Запуск настроенного браузера.
 
         Returns:
-            Launched Browser instance.
+            Запущенный экземпляр Browser.
         """
         browser_type = getattr(
             self.playwright,
@@ -42,16 +42,16 @@ class BrowserManager:
         return self._browser
 
     async def new_context(self, **kwargs: Any) -> BrowserContext:
-        """Create new browser context.
+        """Создать новый контекст браузера.
 
         Args:
-            **kwargs: Context creation options.
+            **kwargs: Опции создания контекста.
 
         Returns:
-            New BrowserContext.
+            Новый BrowserContext.
 
         Raises:
-            RuntimeError: If browser failed to launch.
+            RuntimeError: Если браузер не удалось запустить.
         """
         if self._browser is None:
             await self.launch()
@@ -64,19 +64,19 @@ class BrowserManager:
         )
 
     async def new_page(self, **kwargs: Any) -> Page:
-        """Create new page in fresh context.
+        """Создать новую страницу в свежем контексте.
 
         Args:
-            **kwargs: Page creation options.
+            **kwargs: Опции создания страницы.
 
         Returns:
-            New Page.
+            Новая Page.
         """
         context = await self.new_context(**kwargs)
         return await context.new_page()
 
     async def close(self) -> None:
-        """Close browser instance if open."""
+        """Закрыть экземпляр браузера, если он открыт."""
         if self._browser is not None:
             await self._browser.close()
             self._browser = None
@@ -86,13 +86,13 @@ class BrowserManager:
 async def managed_browser(
     playwright: Playwright,
 ) -> AsyncGenerator[BrowserManager, None]:
-    """Context manager for browser lifecycle.
+    """Контекстный менеджер жизненного цикла браузера.
 
     Args:
-        playwright: Playwright async instance.
+        playwright: Асинхронный экземпляр Playwright.
 
     Yields:
-        BrowserManager ready for use.
+        BrowserManager, готовый к использованию.
     """
     manager = BrowserManager(playwright)
     try:
@@ -106,14 +106,14 @@ async def managed_page(
     playwright: Playwright,
     **kwargs: Any,
 ) -> AsyncGenerator[Page, None]:
-    """Context manager for a single page lifecycle.
+    """Контекстный менеджер жизненного цикла одной страницы.
 
     Args:
-        playwright: Playwright async instance.
-        **kwargs: Options passed to new_page.
+        playwright: Асинхронный экземпляр Playwright.
+        **kwargs: Опции, передаваемые в new_page.
 
     Yields:
-        Ready Playwright Page.
+        Готовая страница Playwright.
     """
     async with managed_browser(playwright) as manager:
         page = await manager.new_page(**kwargs)
