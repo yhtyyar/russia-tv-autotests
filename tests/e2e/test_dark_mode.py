@@ -41,7 +41,7 @@ async def test_home_page_toggle_dark_mode(page: Page):
 
     initial = await home.is_dark_mode_active()
     await home.toggle_dark_mode()
-    await page.wait_for_timeout(500)
+    await page.wait_for_load_state("domcontentloaded")
     after = await home.is_dark_mode_active()
     assert after != initial, "Dark mode state did not change after toggle"
 
@@ -59,7 +59,7 @@ async def test_schedule_page_dark_mode_toggle(page: Page):
 
     initial = await schedule.is_dark_mode_active()
     await schedule.toggle_dark_mode()
-    await page.wait_for_timeout(500)
+    await page.wait_for_load_state("domcontentloaded")
     after = await schedule.is_dark_mode_active()
     assert after != initial, "Dark mode state did not change on schedule page"
 
@@ -77,14 +77,14 @@ async def test_dark_mode_persists_across_navigation(page: Page):
 
     # Enable dark mode
     await home.toggle_dark_mode()
-    await page.wait_for_timeout(500)
+    await page.wait_for_load_state("domcontentloaded")
     dark_on_home = await home.is_dark_mode_active()
 
     # Navigate to schedule
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(500)
+    await page.wait_for_load_state("domcontentloaded")
     dark_on_schedule = await schedule.is_dark_mode_active()
 
     assert dark_on_home == dark_on_schedule, (
@@ -99,13 +99,13 @@ async def test_dark_mode_on_channel_page(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     if not await channel.is_element_visible(channel._DARK_MODE_TOGGLE):
         pytest.skip("Dark mode toggle not implemented")
 
     initial = await channel.is_dark_mode_active()
     await channel.toggle_dark_mode()
-    await page.wait_for_timeout(500)
+    await page.wait_for_load_state("domcontentloaded")
     after = await channel.is_dark_mode_active()
     assert after != initial, "Dark mode did not toggle on channel page"

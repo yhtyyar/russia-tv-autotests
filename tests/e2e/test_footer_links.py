@@ -66,7 +66,7 @@ async def test_schedule_page_footer_visible(page: Page):
 
     # Footer might be below fold, scroll to bottom
     await page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
-    await page.wait_for_timeout(500)
+    await page.wait_for_selector(schedule._FOOTER, state="visible", timeout=5000)
 
     visible = await schedule.is_element_visible(schedule._FOOTER)
     assert visible, "Footer is not visible on schedule page"
@@ -79,11 +79,11 @@ async def test_channel_page_footer_visible(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     # Scroll to bottom to reveal footer
     await page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
-    await page.wait_for_timeout(800)
+    await page.wait_for_selector(channel._FOOTER, state="visible", timeout=5000)
 
     visible = await channel.is_footer_visible()
     if not visible:

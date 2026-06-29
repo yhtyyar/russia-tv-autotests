@@ -45,7 +45,7 @@ async def test_search_functionality(page: Page):
     await home.expect_channels_loaded(timeout=15000)
 
     await home.search("Первый")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     screenshot_path = await capture_full_page(page, "search_results")
     assert screenshot_path is not None

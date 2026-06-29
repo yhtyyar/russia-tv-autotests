@@ -51,7 +51,7 @@ async def test_home_to_channel_detail_and_back(page: Page):
         pytest.skip("No channel cards available")
 
     await cards[0].click()
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
     # SPA navigation may not change URL; verify page content changed
     current_url = page.url
     # Accept either channel URL or home with hash/query if SPA uses client-side routing
@@ -61,7 +61,6 @@ async def test_home_to_channel_detail_and_back(page: Page):
 
     await page.go_back()
     await page.wait_for_load_state("domcontentloaded")
-    await page.wait_for_timeout(1000)
     # Should return to home
     assert home.url in page.url
 
@@ -83,7 +82,7 @@ async def test_schedule_to_channel_detail(page: Page):
     channel_id = links[0].get("href", "").split("/")[-1] or "1"
     channel = ChannelPage(page)
     await channel.open_channel(channel_id)
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
     assert "/channel/" in page.url or "/epg" in page.url
 
 

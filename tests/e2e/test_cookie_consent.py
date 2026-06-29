@@ -41,7 +41,7 @@ async def test_cookie_accept_dismisses_banner(page: Page):
         pytest.skip("Cookie banner not implemented or already dismissed")
 
     await home.accept_cookies()
-    await page.wait_for_timeout(1000)
+    await page.wait_for_selector(home._COOKIE_BANNER, state="hidden", timeout=5000)
 
     visible = await home.is_cookie_banner_visible()
     assert not visible, "Cookie banner should be hidden after accept"
@@ -68,7 +68,7 @@ async def test_cookie_banner_on_channel_page(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     visible = await channel.is_cookie_banner_visible()
     if not visible:

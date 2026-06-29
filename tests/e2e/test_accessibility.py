@@ -29,7 +29,7 @@ async def test_home_page_accessibility(page: Page):
     await page.add_script_tag(
         url="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.0/axe.min.js"
     )
-    await page.wait_for_timeout(500)
+    await page.wait_for_function("() => typeof axe !== 'undefined'")
 
     violations = await page.evaluate(
         """() => {
@@ -76,7 +76,7 @@ async def test_schedule_page_accessibility(page: Page):
     await page.add_script_tag(
         url="https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.9.0/axe.min.js"
     )
-    await page.wait_for_timeout(500)
+    await page.wait_for_function("() => typeof axe !== 'undefined'")
 
     violations = await page.evaluate(
         """() => {

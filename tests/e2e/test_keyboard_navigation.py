@@ -76,7 +76,7 @@ async def test_enter_key_activates_search(page: Page):
     await page.focus(selector)
     await page.keyboard.type("Первый")
     await page.keyboard.press("Enter")
-    await page.wait_for_timeout(1500)
+    await page.wait_for_load_state("networkidle")
 
     # After submit, URL may change or page stays with results
     current_url = page.url

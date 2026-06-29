@@ -39,7 +39,7 @@ async def test_schedule_select_today(page: Page):
     today = format_schedule_date("today")
     try:
         await schedule.select_date(today)
-        await page.wait_for_timeout(1500)
+        await page.wait_for_load_state("networkidle")
     except Exception:
         pytest.skip("Date picker not interactable")
 
@@ -61,7 +61,7 @@ async def test_schedule_select_yesterday(page: Page):
     yesterday = format_schedule_date("yesterday")
     try:
         await schedule.select_date(yesterday)
-        await page.wait_for_timeout(1500)
+        await page.wait_for_load_state("networkidle")
     except Exception:
         pytest.skip("Date picker not interactable")
 
@@ -82,7 +82,7 @@ async def test_schedule_select_tomorrow(page: Page):
     tomorrow = format_schedule_date("tomorrow")
     try:
         await schedule.select_date(tomorrow)
-        await page.wait_for_timeout(1500)
+        await page.wait_for_load_state("networkidle")
     except Exception:
         pytest.skip("Date picker not interactable")
 
@@ -103,7 +103,7 @@ async def test_schedule_programs_visible_after_date_change(page: Page):
     today = format_schedule_date("today")
     try:
         await schedule.select_date(today)
-        await page.wait_for_timeout(1500)
+        await page.wait_for_load_state("networkidle")
     except Exception:
         pytest.skip("Date picker not interactable")
 

@@ -61,7 +61,7 @@ async def test_channel_page_has_title(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     meta = await channel.get_meta_tags()
     assert meta["title"], "Channel page title is empty"

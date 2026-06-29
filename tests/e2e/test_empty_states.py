@@ -26,7 +26,7 @@ async def test_search_no_results_shows_empty_state(page: Page):
         pytest.skip("Search not visible")
 
     await home.search("xyznonexistent12345")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     # Either empty state is shown, or page stays on home
     empty_visible = await home.is_empty_state_visible()
@@ -72,7 +72,7 @@ async def test_channel_page_empty_programs_not_crashing(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("999999")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     body = await page.query_selector("body")
     assert body is not None

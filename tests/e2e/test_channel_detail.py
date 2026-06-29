@@ -22,7 +22,7 @@ async def test_channel_page_loads_and_shows_name(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     name = await channel.get_channel_name()
     if not name:
@@ -37,7 +37,7 @@ async def test_channel_page_has_programs_or_empty_state(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     await channel.get_programs()
     # Either programs exist or page is functional
@@ -54,7 +54,7 @@ async def test_channel_page_current_program_indicator(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     visible = await channel.is_current_program_visible()
     if not visible:
@@ -85,7 +85,7 @@ async def test_channel_page_meta_tags(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     meta = await channel.get_meta_tags()
     assert meta["title"], "Channel page title is empty"

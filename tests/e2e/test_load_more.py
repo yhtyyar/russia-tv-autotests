@@ -41,7 +41,7 @@ async def test_load_more_increases_channel_count(page: Page):
     before_count = len(before)
 
     await home.click_load_more()
-    await page.wait_for_timeout(1500)
+    await page.wait_for_load_state("networkidle")
 
     after = await home.get_visible_channels()
     after_count = len(after)
@@ -67,7 +67,7 @@ async def test_load_more_on_mobile(page: Page):
 
     before = len(await home.get_visible_channels())
     await home.click_load_more()
-    await page.wait_for_timeout(1500)
+    await page.wait_for_load_state("networkidle")
     after = len(await home.get_visible_channels())
 
     assert after >= before, "Load more did not work on mobile"

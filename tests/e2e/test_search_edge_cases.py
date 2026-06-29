@@ -43,7 +43,7 @@ async def test_search_equivalence_partitioning(
         pytest.skip("Search input not visible")
 
     await home.search(query)
-    await page.wait_for_timeout(2000)
+    await page.wait_for_load_state("networkidle")
 
     # For empty/invalid queries we expect no URL change or same page
     current_url = page.url
