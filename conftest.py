@@ -9,6 +9,9 @@ from playwright.async_api import Browser, BrowserContext, Page, Playwright, asyn
 
 from config.settings import Settings, get_settings
 from core.browser_manager import BrowserManager
+from core.logger import setup_logging
+
+setup_logging()
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:

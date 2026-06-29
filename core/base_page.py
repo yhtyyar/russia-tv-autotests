@@ -7,6 +7,9 @@ from typing import Any, Literal
 from playwright.async_api import Page
 
 from config.settings import get_settings
+from core.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class BasePage(ABC):
@@ -41,10 +44,12 @@ class BasePage(ABC):
         Args:
             **kwargs: Дополнительные аргументы, передаваемые в page.goto.
         """
+        logger.info("Navigating to %s", self.url)
         last_err = None
         for attempt in range(1, 4):
             try:
                 await self.page.goto(self.url, **kwargs)
+                logger.info("Loaded %s", self.url)
                 return
             except Exception as exc:
                 last_err = exc
@@ -86,6 +91,7 @@ class BasePage(ABC):
             selector: CSS или XPath селектор.
             **kwargs: Дополнительные аргументы, передаваемые в page.click.
         """
+        logger.debug("Clicking selector: %s", selector)
         await self.page.click(selector, **kwargs)
 
     async def fill(self, selector: str, value: str) -> None:
@@ -95,6 +101,7 @@ class BasePage(ABC):
             selector: CSS или XPath селектор для input.
             value: Значение для заполнения.
         """
+        logger.debug("Filling selector %s with value %r", selector, value)
         await self.page.fill(selector, value)
 
     async def get_text(self, selector: str) -> str:
