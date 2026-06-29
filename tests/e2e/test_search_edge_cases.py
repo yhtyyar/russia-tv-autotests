@@ -1,13 +1,13 @@
-"""Search edge-case tests using Equivalence Partitioning + Error Guessing.
+"""Тесты граничных случаев поиска с использованием разбиения на эквивалентные классы + предугадывание ошибок.
 
-Partitions for search query input:
-- Empty string (invalid)
-- Single character (boundary, valid)
-- Normal query 3-30 chars (valid)
-- Maximum length / very long (invalid/boundary)
-- Special characters (valid/invalid boundary)
-- SQL injection / XSS payload (security, invalid)
-- Unicode/Cyrillic only (valid)
+Разбиения для поискового запроса:
+- Пустая строка (невалидно)
+- Один символ (граница, валидно)
+- Нормальный запрос 3-30 символов (валидно)
+- Максимальная длина / очень длинный (невалидно/граница)
+- Спецсимволы (граница валидности)
+- SQL-инъекция / XSS (безопасность, невалидно)
+- Только Unicode/кириллица (валидно)
 """
 
 import pytest
@@ -34,7 +34,7 @@ from pages.home_page import HomePage
 async def test_search_equivalence_partitioning(
     page: Page, query: str, should_have_results: bool
 ):
-    """Search with various input partitions."""
+    """Поиск с различными разбиениями входных данных."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)

@@ -1,10 +1,10 @@
-"""E2E tests for keyboard navigation and accessibility.
+"""E2E-тесты клавиатурной навигации и доступности.
 
-Covers:
-- Tab navigation through main interactive elements
-- Enter/Space activation of buttons
-- Focus trap prevention
-- Skip link presence
+Покрывает:
+- Tab-навигация по основным интерактивным элементам
+- Активация кнопок через Enter/Space
+- Предотвращение focus trap
+- Наличие skip-ссылок
 """
 
 import pytest
@@ -17,7 +17,7 @@ from pages.home_page import HomePage
 @pytest.mark.accessibility
 @pytest.mark.asyncio
 async def test_home_page_tab_navigation(page: Page):
-    """Tabbing should move focus through interactive elements."""
+    """Tab должен перемещать фокус по интерактивным элементам."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -38,7 +38,7 @@ async def test_home_page_tab_navigation(page: Page):
 @pytest.mark.accessibility
 @pytest.mark.asyncio
 async def test_search_input_focusable(page: Page):
-    """Search input should be reachable and focusable via keyboard."""
+    """Поле поиска должно быть доступно для фокуса с клавиатуры."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -64,7 +64,7 @@ async def test_search_input_focusable(page: Page):
 @pytest.mark.accessibility
 @pytest.mark.asyncio
 async def test_enter_key_activates_search(page: Page):
-    """Pressing Enter in search should submit query."""
+    """Нажатие Enter в поиске должно отправлять запрос."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -87,7 +87,7 @@ async def test_enter_key_activates_search(page: Page):
 @pytest.mark.accessibility
 @pytest.mark.asyncio
 async def test_focus_visible_styles(page: Page):
-    """Focused elements should have visible focus indicator."""
+    """Сфокусированные элементы должны иметь видимый индикатор фокуса."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)

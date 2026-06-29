@@ -1,10 +1,10 @@
-"""E2E tests for cookie consent banner.
+"""E2E-тесты cookie-баннера.
 
-Covers:
-- Banner visibility on first visit
-- Accept button functionality
-- Banner dismissal after accept
-- Banner on different pages
+Покрывает:
+- Видимость баннера при первом визите
+- Функциональность кнопки принятия
+- Скрытие баннера после принятия
+- Баннер на разных страницах
 """
 
 import pytest
@@ -18,7 +18,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_cookie_banner_visible_on_first_visit(page: Page):
-    """Cookie consent banner should be visible on first home page visit."""
+    """Баннер cookie-согласия должен быть виден при первом визите на главную."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -32,7 +32,7 @@ async def test_cookie_banner_visible_on_first_visit(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_cookie_accept_dismisses_banner(page: Page):
-    """Clicking accept should hide cookie banner."""
+    """Клик по принятию должен скрывать cookie-баннер."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -50,7 +50,7 @@ async def test_cookie_accept_dismisses_banner(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_cookie_banner_on_schedule_page(page: Page):
-    """Cookie banner should appear on schedule page if not yet accepted."""
+    """Cookie-баннер должен появляться на странице расписания, если ещё не принят."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -64,7 +64,7 @@ async def test_cookie_banner_on_schedule_page(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_cookie_banner_on_channel_page(page: Page):
-    """Cookie banner should appear on channel detail page."""
+    """Cookie-баннер должен появляться на странице канала."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")

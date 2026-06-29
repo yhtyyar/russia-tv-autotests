@@ -1,6 +1,6 @@
-"""Accessibility tests using Axe-core via Playwright.
+"""Тесты доступности через Axe-core и Playwright.
 
-Checks WCAG 2.1 AA compliance for critical pages.
+Проверяет соответствие WCAG 2.1 AA для критических страниц.
 """
 
 import warnings
@@ -20,7 +20,7 @@ from pages.schedule_page import SchedulePage
 )
 @pytest.mark.asyncio
 async def test_home_page_accessibility(page: Page):
-    """Home page should have no critical accessibility violations."""
+    """Главная страница не должна иметь критических нарушений доступности."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -68,7 +68,7 @@ async def test_home_page_accessibility(page: Page):
 )
 @pytest.mark.asyncio
 async def test_schedule_page_accessibility(page: Page):
-    """Schedule page should have no critical accessibility violations."""
+    """Страница расписания не должна иметь критических нарушений доступности."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -104,7 +104,7 @@ async def test_schedule_page_accessibility(page: Page):
 @pytest.mark.accessibility
 @pytest.mark.asyncio
 async def test_focus_management_on_search(page: Page):
-    """Search input should be focusable via keyboard."""
+    """Поле поиска должно быть доступно для фокуса с клавиатуры."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)

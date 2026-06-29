@@ -1,4 +1,4 @@
-"""Unit tests for core exceptions."""
+"""Unit-тесты для core-исключений."""
 
 from core.exceptions import (
     APIError,

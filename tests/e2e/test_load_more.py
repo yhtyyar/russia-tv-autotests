@@ -1,9 +1,9 @@
-"""E2E tests for 'Load more' / pagination functionality on home page.
+"""E2E-тесты «Показать ещё» / пагинации на главной странице.
 
-Covers:
-- Load more button visibility
-- Clicking load more increases channel count
-- Load more on mobile viewport
+Покрывает:
+- Видимость кнопки «Показать ещё»
+- Клик увеличивает количество каналов
+- «Показать ещё» на мобильном вьюпорте
 """
 
 import pytest
@@ -15,7 +15,7 @@ from pages.home_page import HomePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_load_more_button_visible(page: Page):
-    """Load more button should be visible when there are more channels."""
+    """Кнопка «Показать ещё» должна быть видна, когда есть дополнительные каналы."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -29,7 +29,7 @@ async def test_load_more_button_visible(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_load_more_increases_channel_count(page: Page):
-    """Clicking load more should increase the number of visible channels."""
+    """Клик по «Показать ещё» должен увеличивать количество видимых каналов."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -55,7 +55,7 @@ async def test_load_more_increases_channel_count(page: Page):
 @pytest.mark.responsive
 @pytest.mark.asyncio
 async def test_load_more_on_mobile(page: Page):
-    """Load more should work on mobile viewport."""
+    """«Показать ещё» должен работать на мобильном вьюпорте."""
     await page.set_viewport_size({"width": 375, "height": 667})
 
     home = HomePage(page)

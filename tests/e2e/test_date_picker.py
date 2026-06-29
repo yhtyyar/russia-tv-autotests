@@ -1,10 +1,10 @@
-"""E2E tests for date picker on schedule page.
+"""E2E-тесты выбора даты на странице расписания.
 
-Covers:
-- Date picker visibility
-- Selecting different dates changes content
-- Yesterday / today / tomorrow navigation
-- Invalid date handling
+Покрывает:
+- Видимость выбора даты
+- Выбор разных дат меняет контент
+- Навигация вчера / сегодня / завтра
+- Обработка невалидной даты
 """
 
 import pytest
@@ -17,7 +17,7 @@ from utils.date_helpers import format_schedule_date
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_date_picker_exists(page: Page):
-    """Schedule page should have a date picker element."""
+    """Страница расписания должна иметь элемент выбора даты."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -31,7 +31,7 @@ async def test_schedule_date_picker_exists(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_select_today(page: Page):
-    """Selecting today's date should keep or reload schedule."""
+    """Выбор сегодняшней даты должен сохранять или перезагружать расписание."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -53,7 +53,7 @@ async def test_schedule_select_today(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_select_yesterday(page: Page):
-    """Selecting yesterday's date should show schedule."""
+    """Выбор вчерашней даты должен показывать расписание."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -74,7 +74,7 @@ async def test_schedule_select_yesterday(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_select_tomorrow(page: Page):
-    """Selecting tomorrow's date should show schedule."""
+    """Выбор завтрашней даты должен показывать расписание."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -95,7 +95,7 @@ async def test_schedule_select_tomorrow(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_programs_visible_after_date_change(page: Page):
-    """After selecting a date, program items should be visible or empty state shown."""
+    """После выбора даты элементы передач должны быть видны или показано пустое состояние."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")

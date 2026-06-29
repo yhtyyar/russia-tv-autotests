@@ -1,4 +1,4 @@
-"""E2E tests for schedule date navigation."""
+"""E2E-тесты навигации по датам в расписании."""
 
 import pytest
 from playwright.async_api import Page
@@ -10,7 +10,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_page_loads(page: Page):
-    """Schedule page should load with channel links."""
+    """Страница расписания должна загружаться со ссылками каналов."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -25,7 +25,7 @@ async def test_schedule_page_loads(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_navigation_from_home_to_schedule(page: Page):
-    """User can navigate from home to schedule page."""
+    """Пользователь может перейти с главной на страницу расписания."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded()

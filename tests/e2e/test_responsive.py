@@ -1,4 +1,4 @@
-"""E2E responsive design tests for russia-tv.online."""
+"""E2E-тесты адаптивного дизайна для russia-tv.online."""
 
 import pytest
 from playwright.async_api import Page
@@ -10,7 +10,7 @@ from pages.home_page import HomePage
 @pytest.mark.responsive
 @pytest.mark.asyncio
 async def test_home_page_mobile_viewport(page: Page):
-    """Site should render correctly on mobile viewport without horizontal scroll."""
+    """Сайт должен корректно отображаться на мобильном вьюпорте без горизонтального скролла."""
     await page.set_viewport_size({"width": 375, "height": 667})
 
     home = HomePage(page)
@@ -30,7 +30,7 @@ async def test_home_page_mobile_viewport(page: Page):
 @pytest.mark.responsive
 @pytest.mark.asyncio
 async def test_home_page_tablet_viewport(page: Page):
-    """Site should render correctly on tablet viewport."""
+    """Сайт должен корректно отображаться на планшетном вьюпорте."""
     await page.set_viewport_size({"width": 768, "height": 1024})
 
     home = HomePage(page)
@@ -45,7 +45,7 @@ async def test_home_page_tablet_viewport(page: Page):
 @pytest.mark.responsive
 @pytest.mark.asyncio
 async def test_mobile_viewport_no_horizontal_scroll(page: Page):
-    """Mobile viewport should not have horizontal scroll after loading."""
+    """Мобильный вьюпорт не должен иметь горизонтального скролла после загрузки."""
     await page.set_viewport_size({"width": 375, "height": 667})
 
     home = HomePage(page)

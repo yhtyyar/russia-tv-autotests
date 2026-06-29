@@ -1,7 +1,7 @@
-"""Visual regression tests using Playwright screenshots.
+"""Тесты визуальной регрессии с помощью скриншотов Playwright.
 
-Baseline screenshots are stored in reports/screenshots/baseline/.
-Run with --update-baselines to refresh reference images.
+Базовые скриншоты хранятся в reports/screenshots/baseline/.
+Запускайте с --update-baselines для обновления референсных изображений.
 """
 
 from pathlib import Path
@@ -32,7 +32,7 @@ def _setup_visual_dirs() -> None:
 
 @pytest.fixture
 async def page_mobile(page: Page):
-    """Yield a page configured for mobile viewport."""
+    """Вернуть страницу, настроенную для мобильного вьюпорта."""
     await page.set_viewport_size({"width": 375, "height": 667})
     yield page
 
@@ -43,7 +43,7 @@ async def page_mobile(page: Page):
 async def test_home_page_desktop_baseline(
     page: Page, request: pytest.FixtureRequest
 ):
-    """Capture and compare home page screenshot on desktop."""
+    """Сделать и сравнить скриншот главной страницы на десктопе."""
     baseline = BASELINE_DIR / "home_desktop.png"
     actual = ACTUAL_DIR / "home_desktop.png"
 
@@ -75,7 +75,7 @@ async def test_home_page_desktop_baseline(
 async def test_home_page_mobile_baseline(
     page_mobile: Page, request: pytest.FixtureRequest
 ):
-    """Capture and compare home page screenshot on mobile."""
+    """Сделать и сравнить скриншот главной страницы на мобильном."""
     baseline = BASELINE_DIR / "home_mobile.png"
     actual = ACTUAL_DIR / "home_mobile.png"
 

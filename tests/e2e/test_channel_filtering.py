@@ -1,4 +1,4 @@
-"""E2E tests for channel category filtering."""
+"""E2E-тесты фильтрации каналов по категориям."""
 
 import pytest
 from playwright.async_api import Page
@@ -9,7 +9,7 @@ from pages.home_page import HomePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_filter_by_category_shows_results(page: Page):
-    """Selecting a category should show filtered channels."""
+    """Выбор категории должен показывать отфильтрованные каналы."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -30,7 +30,7 @@ async def test_filter_by_category_shows_results(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_category_filter_clickable(page: Page):
-    """All category buttons should be clickable."""
+    """Все кнопки категорий должны быть кликабельными."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)

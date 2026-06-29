@@ -1,4 +1,4 @@
-"""Integration tests verifying site availability without relying on public REST API."""
+"""Интеграционные тесты проверки доступности сайта без зависимости от публичного REST API."""
 
 import httpx
 import pytest
@@ -7,7 +7,7 @@ import pytest
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_home_page_returns_200():
-    """Home page should return 200 OK."""
+    """Главная страница должна возвращать 200 OK."""
     async with httpx.AsyncClient() as client:
         response = await client.get("https://russia-tv.online/")
         assert response.status_code == 200
@@ -17,7 +17,7 @@ async def test_home_page_returns_200():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_schedule_page_returns_200():
-    """Schedule /epg page should return 200 OK."""
+    """Страница расписания /epg должна возвращать 200 OK."""
     async with httpx.AsyncClient() as client:
         response = await client.get("https://russia-tv.online/epg")
         assert response.status_code == 200
@@ -27,7 +27,7 @@ async def test_schedule_page_returns_200():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_home_page_contains_channel_content():
-    """Home page HTML should contain expected channel-related content."""
+    """HTML главной страницы должен содержать ожидаемый контент о каналах."""
     async with httpx.AsyncClient() as client:
         response = await client.get("https://russia-tv.online/")
         assert response.status_code == 200
@@ -38,7 +38,7 @@ async def test_home_page_contains_channel_content():
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_site_performance_baseline():
-    """Home page should load within 2 seconds."""
+    """Главная страница должна загружаться за 2 секунды."""
     import time
     async with httpx.AsyncClient() as client:
         start = time.perf_counter()

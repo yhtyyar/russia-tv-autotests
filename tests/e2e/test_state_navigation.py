@@ -1,12 +1,12 @@
-"""State-transition tests for user navigation flow.
+"""Тесты переходов состояний для пользовательских навигационных потоков.
 
-States: HOME, SCHEDULE, CHANNEL_DETAIL
-Transitions:
-  HOME → SCHEDULE (via nav link)
-  SCHEDULE → HOME (via logo/back)
-  HOME → CHANNEL_DETAIL (via channel card)
-  CHANNEL_DETAIL → HOME (via back button)
-  SCHEDULE → CHANNEL_DETAIL (via channel link)
+Состояния: HOME, SCHEDULE, CHANNEL_DETAIL
+Переходы:
+  HOME → SCHEDULE (через ссылку в навигации)
+  SCHEDULE → HOME (через логотип/назад)
+  HOME → CHANNEL_DETAIL (через карточку канала)
+  CHANNEL_DETAIL → HOME (через кнопку назад)
+  SCHEDULE → CHANNEL_DETAIL (через ссылку канала)
 """
 
 import pytest
@@ -21,7 +21,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.state_transition
 @pytest.mark.asyncio
 async def test_home_to_schedule_and_back(page: Page):
-    """Navigate Home → Schedule → Home via browser back."""
+    """Навигация Главная → Расписание → Главная через браузер назад."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -41,7 +41,7 @@ async def test_home_to_schedule_and_back(page: Page):
 @pytest.mark.state_transition
 @pytest.mark.asyncio
 async def test_home_to_channel_detail_and_back(page: Page):
-    """Navigate Home → Channel Detail → Home."""
+    """Навигация Главная → Канал → Главная."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -70,7 +70,7 @@ async def test_home_to_channel_detail_and_back(page: Page):
 @pytest.mark.state_transition
 @pytest.mark.asyncio
 async def test_schedule_to_channel_detail(page: Page):
-    """Navigate Schedule → Channel Detail via channel link."""
+    """Навигация Расписание → Канал через ссылку канала."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -91,7 +91,7 @@ async def test_schedule_to_channel_detail(page: Page):
 @pytest.mark.state_transition
 @pytest.mark.asyncio
 async def test_reload_preserves_state(page: Page):
-    """Reloading schedule page should keep channels visible."""
+    """Перезагрузка страницы расписания должна сохранять видимость каналов."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")

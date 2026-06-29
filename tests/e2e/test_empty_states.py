@@ -1,9 +1,9 @@
-"""E2E tests for empty states and no-results scenarios.
+"""E2E-тесты пустых состояний и сценариев «нет результатов».
 
-Covers:
-- Search with non-existent query shows empty state
-- Invalid category shows empty state or fallback
-- Channel with no programs
+Покрывает:
+- Поиск по несуществующему запросу показывает пустое состояние
+- Невалидная категория показывает пустое состояние или fallback
+- Канал без передач
 """
 
 import pytest
@@ -17,7 +17,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_search_no_results_shows_empty_state(page: Page):
-    """Search with gibberish should show empty state or stay on page."""
+    """Поиск по бессмысленному запросу должен показывать пустое состояние или оставаться на странице."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -39,7 +39,7 @@ async def test_search_no_results_shows_empty_state(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_invalid_category_url_loads_without_crash(page: Page):
-    """Navigating to non-existent category should not crash."""
+    """Переход на несуществующую категорию не должен падать."""
     response = await page.goto("https://russia-tv.online/category/nonexistent-xyz")
     if response:
         assert response.status in (200, 404)
@@ -53,7 +53,7 @@ async def test_invalid_category_url_loads_without_crash(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_page_empty_state_not_crashing(page: Page):
-    """Schedule page should load even if no programs are available."""
+    """Страница расписания должна загружаться даже без доступных передач."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -68,7 +68,7 @@ async def test_schedule_page_empty_state_not_crashing(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_channel_page_empty_programs_not_crashing(page: Page):
-    """Channel page should load even with empty program list."""
+    """Страница канала должна загружаться даже с пустым списком передач."""
     channel = ChannelPage(page)
     await channel.open_channel("999999")
     await channel.wait_for_load("domcontentloaded")

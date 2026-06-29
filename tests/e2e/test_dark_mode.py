@@ -1,10 +1,10 @@
-"""E2E tests for dark mode / theme toggle functionality.
+"""E2E-тесты тёмной темы / переключателя темы.
 
-Covers:
-- Toggle visibility
-- Toggle activation on home, schedule, and channel pages
-- Persistence across navigation
-- System preference respect (optional)
+Покрывает:
+- Видимость переключателя
+- Активация на главной, в расписании и на странице канала
+- Сохранение при навигации
+- Учёт системных предпочтений (опционально)
 """
 
 import pytest
@@ -18,7 +18,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_dark_mode_toggle_exists(page: Page):
-    """Dark mode toggle should be visible on home page."""
+    """Переключатель тёмной темы должен быть виден на главной странице."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -31,7 +31,7 @@ async def test_home_page_dark_mode_toggle_exists(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_toggle_dark_mode(page: Page):
-    """Clicking toggle should switch dark mode state on home page."""
+    """Клик по переключателю должен менять состояние тёмной темы на главной."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -49,7 +49,7 @@ async def test_home_page_toggle_dark_mode(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_page_dark_mode_toggle(page: Page):
-    """Dark mode toggle should work on schedule page."""
+    """Переключатель тёмной темы должен работать на странице расписания."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -67,7 +67,7 @@ async def test_schedule_page_dark_mode_toggle(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_dark_mode_persists_across_navigation(page: Page):
-    """Dark mode state should persist when navigating between pages."""
+    """Состояние тёмной темы должно сохраняться при навигации между страницами."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -95,7 +95,7 @@ async def test_dark_mode_persists_across_navigation(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_dark_mode_on_channel_page(page: Page):
-    """Channel detail page should respect dark mode."""
+    """Страница канала должна поддерживать тёмную тему."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")

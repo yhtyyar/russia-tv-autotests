@@ -1,6 +1,6 @@
-"""Performance budget tests using Boundary Value Analysis.
+"""Тесты performance budget с использованием анализа граничных значений.
 
-Performance budgets (page load time):
+Бюджеты производительности (время загрузки страницы):
 - Mobile 3G: < 5s (TTFB + render)
 - Desktop WiFi: < 2s
 - First Contentful Paint: < 1.5s
@@ -16,7 +16,7 @@ BASE_URL = "https://russia-tv.online/"
 @pytest.mark.performance
 @pytest.mark.asyncio
 async def test_homepage_load_time_desktop():
-    """Home page should load within 2 seconds on desktop."""
+    """Главная страница должна загружаться за 2 секунды на десктопе."""
     async with httpx.AsyncClient(timeout=10.0) as client:
         response = await client.get(BASE_URL)
         assert response.status_code == 200
@@ -31,7 +31,7 @@ async def test_homepage_load_time_desktop():
 @pytest.mark.performance
 @pytest.mark.asyncio
 async def test_schedule_page_load_time():
-    """Schedule page should load within 2.5 seconds."""
+    """Страница расписания должна загружаться за 2.5 секунды."""
     async with httpx.AsyncClient(timeout=10.0) as client:
         response = await client.get(f"{BASE_URL}epg")
         assert response.status_code == 200
@@ -45,7 +45,7 @@ async def test_schedule_page_load_time():
 @pytest.mark.performance
 @pytest.mark.asyncio
 async def test_api_response_time_budget():
-    """Internal API endpoints should respond within 1 second."""
+    """Внутренние API-эндпоинты должны отвечать за 1 секунду."""
     async with httpx.AsyncClient(timeout=5.0) as client:
         response = await client.get(f"{BASE_URL}api/channels")
         # May return 404 if no public API, but should be fast
@@ -59,7 +59,7 @@ async def test_api_response_time_budget():
 @pytest.mark.performance
 @pytest.mark.asyncio
 async def test_assets_cache_headers():
-    """Static assets should have cache headers for performance."""
+    """Статические ассеты должны иметь cache-заголовки для производительности."""
     async with httpx.AsyncClient() as client:
         response = await client.get(BASE_URL)
         assert response.status_code == 200

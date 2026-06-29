@@ -1,11 +1,11 @@
-"""E2E tests for SEO meta tags and page titles.
+"""E2E-тесты SEO meta-тегов и заголовков страниц.
 
-Covers:
-- Home page has title and meta description
-- Schedule page has title
-- Channel page has title
-- Open Graph tags presence
-- Canonical link presence
+Покрывает:
+- У главной страницы есть title и meta description
+- У страницы расписания есть title
+- У страницы канала есть title
+- Наличие Open Graph тегов
+- Наличие canonical link
 """
 
 import pytest
@@ -19,7 +19,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_has_title(page: Page):
-    """Home page should have a non-empty title tag."""
+    """Главная страница должна иметь непустой title."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -31,7 +31,7 @@ async def test_home_page_has_title(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_has_meta_description(page: Page):
-    """Home page should have meta description."""
+    """Главная страница должна иметь meta description."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -45,7 +45,7 @@ async def test_home_page_has_meta_description(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_page_has_title(page: Page):
-    """Schedule page should have a title."""
+    """Страница расписания должна иметь title."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -57,7 +57,7 @@ async def test_schedule_page_has_title(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_channel_page_has_title(page: Page):
-    """Channel detail page should have a title containing channel info."""
+    """Страница канала должна иметь title с информацией о канале."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
@@ -70,7 +70,7 @@ async def test_channel_page_has_title(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_has_canonical_link(page: Page):
-    """Home page should have canonical link."""
+    """Главная страница должна иметь canonical link."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)

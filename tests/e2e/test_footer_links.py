@@ -1,9 +1,9 @@
-"""E2E tests for footer links and footer visibility.
+"""E2E-тесты ссылок в футере и видимости футера.
 
-Covers:
-- Footer presence on key pages
-- Footer links are not broken (have href)
-- Footer link navigation
+Покрывает:
+- Наличие футера на ключевых страницах
+- Ссылки футера не битые (имеют href)
+- Навигация по ссылкам футера
 """
 
 import pytest
@@ -17,7 +17,7 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_footer_visible(page: Page):
-    """Footer should be visible on home page."""
+    """Футер должен быть виден на главной странице."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -29,7 +29,7 @@ async def test_home_page_footer_visible(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_footer_links_not_empty(page: Page):
-    """Footer should contain at least one link."""
+    """Футер должен содержать хотя бы одну ссылку."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -43,7 +43,7 @@ async def test_home_page_footer_links_not_empty(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_footer_links_have_valid_href(page: Page):
-    """All footer links should have non-empty href attributes."""
+    """Все ссылки футера должны иметь непустые href-атрибуты."""
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
@@ -59,7 +59,7 @@ async def test_footer_links_have_valid_href(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_schedule_page_footer_visible(page: Page):
-    """Footer should be visible on schedule page."""
+    """Футер должен быть виден на странице расписания."""
     schedule = SchedulePage(page)
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
@@ -75,7 +75,7 @@ async def test_schedule_page_footer_visible(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_channel_page_footer_visible(page: Page):
-    """Footer should be visible on channel detail page."""
+    """Футер должен быть виден на странице канала."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")

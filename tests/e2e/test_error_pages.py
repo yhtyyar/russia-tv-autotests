@@ -1,11 +1,11 @@
-"""Error handling tests using Error Guessing technique.
+"""Тесты обработки ошибок с использованием техники предугадывания ошибок.
 
-Covers scenarios that often break SPAs:
-- 404 non-existent pages
-- Invalid URL parameters
-- Network offline simulation
-- Very slow network
-- Malformed deep links
+Покрывает сценарии, которые часто ломают SPA:
+- 404 несуществующие страницы
+- Невалидные URL-параметры
+- Симуляция офлайн-режима
+- Очень медленная сеть
+- Некорректные deep links
 """
 
 import pytest
@@ -18,7 +18,7 @@ from pages.home_page import HomePage
 @pytest.mark.error_handling
 @pytest.mark.asyncio
 async def test_404_page_shows_content(page: Page):
-    """Non-existent path should return 404 or fallback page."""
+    """Несуществующий путь должен возвращать 404 или fallback-страницу."""
     response = await page.goto("https://russia-tv.online/nonexistent-page-12345")
     if response:
         assert response.status in (200, 404)
@@ -33,7 +33,7 @@ async def test_404_page_shows_content(page: Page):
 @pytest.mark.error_handling
 @pytest.mark.asyncio
 async def test_invalid_url_parameter(page: Page):
-    """Invalid query parameters should not crash the site."""
+    """Невалидные query-параметры не должны падать сайт."""
     response = await page.goto("https://russia-tv.online/?region=invalid_region_999")
     if response:
         assert response.status == 200
@@ -49,7 +49,7 @@ async def test_invalid_url_parameter(page: Page):
 @pytest.mark.flaky
 @pytest.mark.asyncio
 async def test_offline_fallback(page: Page):
-    """Simulate offline and verify graceful fallback."""
+    """Симулировать офлайн и проверить graceful fallback."""
     await page.context.set_offline(True)
     try:
         await page.goto("https://russia-tv.online/")
@@ -65,7 +65,7 @@ async def test_offline_fallback(page: Page):
 @pytest.mark.error_handling
 @pytest.mark.asyncio
 async def test_slow_network_loads(page: Page):
-    """Page should eventually load even on slow 3G network."""
+    """Страница должна eventually загружаться даже на медленном 3G."""
     cdp_session = await page.context.new_cdp_session(page)
     await cdp_session.send(
         "Network.emulateNetworkConditions",

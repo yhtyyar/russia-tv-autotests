@@ -1,11 +1,11 @@
-"""E2E tests for channel detail page.
+"""E2E-тесты страницы канала.
 
-Covers:
-- Channel name display
-- Program list visibility
-- Current program indicator
-- Navigation back to home
-- Footer and SEO on channel page
+Покрывает:
+- Отображение названия канала
+- Видимость списка передач
+- Индикатор текущей передачи
+- Навигация назад на главную
+- Футер и SEO на странице канала
 """
 
 import pytest
@@ -18,7 +18,7 @@ from pages.home_page import HomePage
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_channel_page_loads_and_shows_name(page: Page):
-    """Channel detail page should load and display channel name."""
+    """Страница канала должна загружаться и отображать название канала."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
@@ -33,7 +33,7 @@ async def test_channel_page_loads_and_shows_name(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_channel_page_has_programs_or_empty_state(page: Page):
-    """Channel page should show programs or empty state, not crash."""
+    """Страница канала должна показывать передачи или пустое состояние, не падать."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
@@ -50,7 +50,7 @@ async def test_channel_page_has_programs_or_empty_state(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_channel_page_current_program_indicator(page: Page):
-    """Channel page may show current program indicator."""
+    """Страница канала может показывать индикатор текущей передачи."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
@@ -65,7 +65,7 @@ async def test_channel_page_current_program_indicator(page: Page):
 @pytest.mark.state_transition
 @pytest.mark.asyncio
 async def test_channel_to_home_navigation(page: Page):
-    """User can navigate from channel page back to home."""
+    """Пользователь может перейти со страницы канала обратно на главную."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
@@ -80,7 +80,7 @@ async def test_channel_to_home_navigation(page: Page):
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_channel_page_meta_tags(page: Page):
-    """Channel page should have title and meta tags."""
+    """Страница канала должна иметь title и meta-теги."""
     channel = ChannelPage(page)
     await channel.open_channel("1")
     await channel.wait_for_load("domcontentloaded")
