@@ -25,9 +25,6 @@ class Settings(BaseSettings):
 
     allure_results_dir: str = "reports/allure-results"
 
-    api_timeout: int = 30
-    api_base_url: str = "https://russia-tv.online/api"
-
     screenshot_dir: str = "reports/screenshots"
 
 

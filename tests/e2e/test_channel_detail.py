@@ -56,9 +56,10 @@ async def test_channel_page_current_program_indicator(page: Page):
     await channel.wait_for_load("domcontentloaded")
     await page.wait_for_timeout(2000)
 
-    await channel.is_current_program_visible()
-    # Current program indicator is optional; page loaded without crash is enough
-    pass
+    visible = await channel.is_current_program_visible()
+    if not visible:
+        pytest.skip("Индикатор текущей передачи не найден на данной странице")
+    assert visible
 
 
 @pytest.mark.e2e
