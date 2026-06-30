@@ -142,7 +142,7 @@ jobs:
       - name: Установка axe-core
         run: npm ci
       - name: Запуск E2E-тестов
-        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-e2e.xml --alluredir=reports/allure-results -m "not mobile"
+        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-e2e.xml --alluredir=reports/allure-results --tracing -m "not mobile"
         env:
           HEADLESS: true
           BROWSER: ${{ matrix.browser }}
@@ -158,6 +158,18 @@ jobs:
         with:
           name: screenshots-${{ matrix.browser }}
           path: reports/screenshots/
+      - name: Загрузка видео
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: videos-${{ matrix.browser }}
+          path: reports/videos/
+      - name: Загрузка traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-${{ matrix.browser }}
+          path: reports/traces/
       - name: Загрузка JUnit-отчёта
         if: always()
         uses: actions/upload-artifact@v4
@@ -183,7 +195,7 @@ jobs:
       - name: Установка axe-core
         run: npm ci
       - name: Запуск Mobile E2E-тестов
-        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-mobile.xml --alluredir=reports/allure-results -m mobile
+        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-mobile.xml --alluredir=reports/allure-results --tracing -m mobile
         env:
           HEADLESS: true
           BROWSER: chromium
@@ -199,6 +211,18 @@ jobs:
         with:
           name: screenshots-mobile
           path: reports/screenshots/
+      - name: Загрузка видео
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: videos-mobile
+          path: reports/videos/
+      - name: Загрузка traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-mobile
+          path: reports/traces/
       - name: Загрузка JUnit-отчёта
         if: always()
         uses: actions/upload-artifact@v4
