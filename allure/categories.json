@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Ошибки продукта",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*"
+  },
+  {
+    "name": "Ошибки тестов",
+    "matchedStatuses": ["broken", "failed"],
+    "traceRegex": ".*(AssertionError|pytest).*"
+  },
+  {
+    "name": "Пропущенные тесты",
+    "matchedStatuses": ["skipped"]
+  },
+  {
+    "name": "Нестабильные тесты",
+    "matchedStatuses": ["failed", "broken"],
+    "flaky": true
+  }
+]

@@ -312,12 +312,18 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
                 severity = SEVERITY_MAP[marker.name]
                 break
 
+        # Title: use Russian docstring as test display name
+        title = story
+        if item.obj.__doc__:
+            title = item.obj.__doc__.strip().split("\n")[0][:120]
+
         # Apply via dynamic Allure API if available
         try:
             import allure
 
             allure.dynamic.feature(feature)
             allure.dynamic.story(story)
+            allure.dynamic.title(title)
             sev = getattr(allure.severity_level, severity)  # type: ignore[attr-defined]
             allure.dynamic.severity(sev)
         except (ImportError, AttributeError):

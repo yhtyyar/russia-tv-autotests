@@ -13,9 +13,9 @@ from allure_commons.types import Severity
 class TestMobileNavigation:
     """Навигационные сценарии на мобильном viewport."""
 
-@allure.feature("E2E тесты навигации на мобильном устройстве (iPhone 14 Pro)")
-@allure.story("Переход на страницу канала и проверка элементов на mobile")
-@allure.severity(Severity.NORMAL)
+    @allure.feature("Мобильная навигация")
+    @allure.story("Переход на страницу канала и проверка элементов на mobile")
+    @allure.severity(Severity.NORMAL)
     async def test_mobile_channel_page(self, mobile_page: Page) -> None:
         """Переход на страницу канала и проверка элементов на mobile."""
         home = HomePage(mobile_page)
@@ -36,9 +36,9 @@ class TestMobileNavigation:
         programs = mobile_page.locator("main").locator("div, li").first
         await expect(programs).to_be_visible(timeout=15000)
 
-@allure.feature("E2E тесты навигации на мобильном устройстве (iPhone 14 Pro)")
-@allure.story("Возврат с страницы канала на главную (кнопка назад / логотип)")
-@allure.severity(Severity.NORMAL)
+    @allure.feature("Мобильная навигация")
+    @allure.story("Возврат с страницы канала на главную (кнопка назад / логотип)")
+    @allure.severity(Severity.NORMAL)
     async def test_mobile_back_to_home(self, mobile_page: Page) -> None:
         """Возврат с страницы канала на главную (кнопка назад / логотип)."""
         home = HomePage(mobile_page)
@@ -58,9 +58,9 @@ class TestMobileNavigation:
         assert mobile_page.url.rstrip("/").endswith("russia-tv.online") or mobile_page.url == "https://russia-tv.online/"
         await home.expect_channels_loaded()
 
-@allure.feature("E2E тесты навигации на мобильном устройстве (iPhone 14 Pro)")
-@allure.story("Кнопка 'Вверх' отображается после скролла на mobile")
-@allure.severity(Severity.NORMAL)
+    @allure.feature("Мобильная навигация")
+    @allure.story("Кнопка 'Вверх' отображается после скролла на mobile")
+    @allure.severity(Severity.NORMAL)
     async def test_mobile_scroll_to_top(self, mobile_page: Page) -> None:
         """Кнопка 'Вверх' отображается после скролла на mobile."""
         home = HomePage(mobile_page)

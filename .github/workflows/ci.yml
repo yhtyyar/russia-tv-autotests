@@ -293,15 +293,20 @@ jobs:
           path: allure-results
         continue-on-error: true
 
-      - name: Подготовить историю Allure
+      - name: Подготовить Allure конфигурацию
         run: |
           mkdir -p allure-results/history
           if [ -d allure/history ]; then
             cp -r allure/history/* allure-results/history/ || true
             echo "История Allure скопирована из allure/"
-          else
-            echo "История Allure не найдена — будет создана новая"
           fi
+          # Копируем русские категории и окружение
+          cp allure/categories.json allure-results/ || true
+          cp allure/environment.properties allure-results/ || true
+          # Подставляем реальные значения окружения
+          sed -i "s|\\${BRANCH}|${{ github.ref_name }}|g" allure-results/environment.properties
+          sed -i "s|\\${COMMIT}|${{ github.sha }}|g" allure-results/environment.properties
+          echo "Конфигурация Allure скопирована"
 
       - name: Генерация Allure Report
         run: allure generate allure-results -o allure --clean
