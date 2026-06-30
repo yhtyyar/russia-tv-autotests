@@ -1,0 +1,2 @@
+[32mINFO    [0m russia_tv_tests.core.base_page:base_page.py:47 Navigating to https://russia-tv.online/
+[32mINFO    [0m russia_tv_tests.core.base_page:base_page.py:52 Loaded https://russia-tv.online/

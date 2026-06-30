@@ -1,0 +1,2 @@
+2026-06-30 13:07:54 [INFO] russia_tv_tests.core.base_page: Navigating to https://russia-tv.online/
+2026-06-30 13:07:57 [INFO] russia_tv_tests.core.base_page: Loaded https://russia-tv.online/

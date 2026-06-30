@@ -1,0 +1,17 @@
+[31m[1mERROR   [0m core.base_api:base_api.py:84 API HTTP error: 404 - {
+  "error": true,
+  "url": "https://russia-tv.online/api/channels",
+  "statusCode": 404,
+  "statusMessage": "Page not found: /api/channels",
+  "message": "Page not found: /api/channels",
+  "data": {
+    "path": "/api/channels"
+  }
+}
+Traceback (most recent call last):
+  File "/home/tester/CascadeProjects/russia-tv-autotests/core/base_api.py", line 81, in get
+    response.raise_for_status()
+  File "/home/tester/CascadeProjects/russia-tv-autotests/.venv/lib/python3.12/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '404 Page not found: /api/channels' for url 'https://russia-tv.online/api/channels'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
