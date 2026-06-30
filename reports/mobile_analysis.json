@@ -1,0 +1,50 @@
+{
+  "header": {
+    "found": 1,
+    "visible": 1
+  },
+  "logo": {
+    "found": 2,
+    "visible": 2
+  },
+  "burger_menu_button": {
+    "found": 9,
+    "visible": 2
+  },
+  "search_input": {
+    "found": 0,
+    "visible": 0
+  },
+  "search_button": {
+    "found": 1,
+    "visible": 1
+  },
+  "channel_cards": {
+    "found": 0,
+    "visible": 0
+  },
+  "cookie_banner": {
+    "found": 0,
+    "visible": 0
+  },
+  "dark_mode_toggle": {
+    "found": 0,
+    "visible": 0
+  },
+  "footer": {
+    "found": 1,
+    "visible": 1
+  },
+  "footer_links": {
+    "found": 5,
+    "visible": 5
+  },
+  "load_more_button": {
+    "found": 0,
+    "visible": 0
+  },
+  "category_filter": {
+    "found": 0,
+    "visible": 0
+  }
+}

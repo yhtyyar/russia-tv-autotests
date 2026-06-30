@@ -207,12 +207,15 @@ jobs:
           path: reports/junit-mobile.xml
 
   allure-report:
-    name: Генерация и публикация Allure Report на GitHub Pages
+    name: Генерация и публикация Allure Report
     runs-on: ubuntu-latest
     needs: [unit-tests, integration-tests, e2e-tests, mobile-tests]
     if: always()
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Установка Allure CLI
         run: npm install -g allure-commandline
@@ -266,30 +269,27 @@ jobs:
           path: allure-results
         continue-on-error: true
 
-      - name: Загрузить историю Allure из gh-pages
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: gh-pages
-        continue-on-error: true
-
       - name: Подготовить историю Allure
         run: |
           mkdir -p allure-results/history
-          if [ -d gh-pages/allure/history ]; then
-            cp -r gh-pages/allure/history/* allure-results/history/ || true
-            echo "История Allure скопирована из gh-pages"
+          if [ -d allure/history ]; then
+            cp -r allure/history/* allure-results/history/ || true
+            echo "История Allure скопирована из allure/"
           else
             echo "История Allure не найдена — будет создана новая"
           fi
 
       - name: Генерация Allure Report
-        run: allure generate allure-results -o allure-report --clean
+        run: allure generate allure-results -o allure --clean
 
-      - name: Деплой Allure на GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
-          destination_dir: allure
-          keep_files: true
+      - name: Коммит и пуш Allure Report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add allure/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "ci: update Allure Report [skip ci]"
+            git push
+          fi
