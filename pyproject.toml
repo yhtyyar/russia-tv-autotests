@@ -42,6 +42,8 @@ dev = [
     "types-pyyaml",
     "pytest-cov>=5.0",
     "git-cliff>=2.0",
+    "factory-boy>=3.3",
+    "faker>=25.0",
 ]
 
 [tool.ruff]

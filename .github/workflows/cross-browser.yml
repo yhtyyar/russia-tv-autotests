@@ -1,0 +1,63 @@
+name: Cross-Browser Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: 'Cloud provider (browserstack or sauce)'
+        required: true
+        default: 'browserstack'
+        type: choice
+        options:
+          - browserstack
+          - sauce
+      suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'cross_browser'
+        type: choice
+        options:
+          - cross_browser
+          - smoke
+          - all
+
+jobs:
+  cross-browser:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox, safari, edge]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install deps
+        run: uv sync --extra dev
+
+      - name: Run cross-browser tests
+        run: |
+          uv run pytest tests/e2e/ -v -m ${{ github.event.inputs.suite }} \
+            --remote-provider=${{ github.event.inputs.provider }} \
+            --alluredir=reports/allure-results \
+            --junitxml=reports/junit-cross.xml
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-cross-browser
+          path: reports/allure-results/

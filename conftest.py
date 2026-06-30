@@ -34,6 +34,13 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=False,
         help="Record Playwright traces for failed E2E tests",
     )
+    parser.addoption(
+        "--remote-provider",
+        action="store",
+        default=None,
+        choices=["browserstack", "sauce"],
+        help="Run tests on cloud provider (browserstack or sauce)",
+    )
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
@@ -59,13 +66,34 @@ async def playwright_instance() -> AsyncGenerator[Playwright, None]:
 
 
 @pytest_asyncio.fixture
-async def browser(playwright_instance: Playwright) -> AsyncGenerator[Browser, None]:
+async def browser(
+    playwright_instance: Playwright, request: pytest.FixtureRequest
+) -> AsyncGenerator[Browser, None]:
     """Provide launched browser for the test session.
 
     Поддерживает chromium, firefox, webkit и yandex (через chromium
-    с кастомным executable_path).
+    с кастомным executable_path). Также поддерживает remote cloud providers
+    через --remote-provider.
     """
     from config.browsers import detect_yandex_browser, launch_browser
+    from config.remote import get_browserstack_url, get_sauce_url
+
+    remote = request.config.getoption("--remote-provider")
+    if remote == "browserstack":
+        ws_url = get_browserstack_url()
+        if ws_url:
+            b = await playwright_instance.chromium.connect(ws_url)
+            yield b
+            await b.close()
+            return
+    elif remote == "sauce":
+        # Sauce Labs через CDP WebSocket
+        sauce_url = get_sauce_url()
+        if sauce_url:
+            b = await playwright_instance.chromium.connect_over_cdp(sauce_url)
+            yield b
+            await b.close()
+            return
 
     s = get_settings()
     if s.browser == "yandex":

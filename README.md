@@ -17,7 +17,7 @@
 
 Профессиональный фреймворк автоматизированного тестирования для [russia-tv.online](https://russia-tv.online/) — телепрограммы на Nuxt.js SPA.
 
-**[Живая Allure-отчётность](https://yhtyyar.github.io/russia-tv-autotests/allure/)** — тренды, скриншоты, история прогонов.
+**[Allure-отчётность](https://yhtyyar.github.io/russia-tv-autotests/allure/)** — тренды, скриншоты, история прогонов.
 
 ---
 
@@ -40,20 +40,21 @@
 
 ## Технологический стек
 
-| Категория | Технология |
-|-----------|------------|
-| **Язык** | Python 3.12 |
-| **Тестовый раннер** | pytest + pytest-asyncio |
-| **Браузерная автоматизация** | Playwright (async API) |
-| **HTTP-клиент** | httpx |
-| **Конфигурация** | Pydantic Settings |
-| **Отчётность** | Allure + pytest-html |
-| **Линтинг** | Ruff, MyPy (strict), Bandit |
-| **Мягкие проверки** | pytest-check |
-| **Доступность** | axe-core (локальный, npm) |
-| **Mobile** | Playwright device emulation (iPhone 14 Pro) |
-| **Региональный браузер** | Яндекс Браузер (Chromium-based, автоопределение пути) |
-| **CI/CD** | GitHub Actions (только ручной запуск) |
+
+| Категория                                  | Технология                                                                  |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Язык**                                        | Python 3.12                                                                           |
+| **Тестовый раннер**                   | pytest + pytest-asyncio                                                               |
+| **Браузерная автоматизация** | Playwright (async API)                                                                |
+| **HTTP-клиент**                               | httpx                                                                                 |
+| **Конфигурация**                        | Pydantic Settings                                                                     |
+| **Отчётность**                            | Allure + pytest-html                                                                  |
+| **Линтинг**                                  | Ruff, MyPy (strict), Bandit                                                           |
+| **Мягкие проверки**                   | pytest-check                                                                          |
+| **Доступность**                          | axe-core (локальный, npm)                                                    |
+| **Mobile**                                          | Playwright device emulation (iPhone 14 Pro)                                           |
+| **Региональный браузер**         | Яндекс Браузер (Chromium-based, автоопределение пути) |
+| **CI/CD**                                           | GitHub Actions (только ручной запуск)                               |
 
 ---
 
@@ -91,13 +92,14 @@ russia-tv-tests/
 
 ## Анализ тестового набора
 
-| Набор | Файлы | Тесты | Длительность | Назначение | Техника |
-|-------|-------|-------|--------------|------------|---------|
-| **Smoke** | 1 | 4 | ~30 s | Критические пути | — |
-| **Unit** | 2 | 18 | < 1 s | Чистая логика | — |
-| **Integration** | 2 | 7 | ~10 s | Доступность сайта, performance budget | Граничные значения |
-| **E2E** | 15 | 55+ | ~120 s | Браузерная автоматизация | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
-| **Mobile** | 2 | 14 | ~90 s | Мобильный viewport, touch, SPA навигация | Попарное тестирование |
+
+| Набор      | Файлы | Тесты | Длительность | Назначение                                       | Техника                                                                                                                  |
+| --------------- | ---------- | ---------- | ------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Smoke**       | 1          | 4          | ~30 s                    | Критические пути                            | —                                                                                                                              |
+| **Unit**        | 2          | 18         | < 1 s                    | Чистая логика                                  | —                                                                                                                              |
+| **Integration** | 2          | 7          | ~10 s                    | Доступность сайта, performance budget      | Граничные значения                                                                                             |
+| **E2E**         | 15         | 55+        | ~120 s                   | Браузерная автоматизация            | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
+| **Mobile**      | 2          | 14         | ~90 s                    | Мобильный viewport, touch, SPA навигация | Попарное тестирование                                                                                       |
 
 **Итого**: 85+ тестов.
 
@@ -115,28 +117,29 @@ russia-tv-tests/
 
 ## Маркеры
 
-| Маркер | Назначение |
-|--------|------------|
-| `@pytest.mark.smoke` | Sanity-проверка |
-| `@pytest.mark.unit` | Изолированные тесты |
-| `@pytest.mark.integration` | Интеграция |
-| `@pytest.mark.e2e` | Браузерная автоматизация |
-| `@pytest.mark.visual` | Визуальная регрессия |
-| `@pytest.mark.responsive` | Адаптивные вьюпорты |
-| `@pytest.mark.error_handling` | 404, офлайн, невалидный ввод |
-| `@pytest.mark.state_transition` | Навигационные потоки |
-| `@pytest.mark.performance` | Performance budget |
-| `@pytest.mark.accessibility` | WCAG / клавиатура |
-| `@pytest.mark.flaky` | Нестабильные (retry) |
-| `@pytest.mark.slow` | > 30 секунд |
-| `@pytest.mark.dark_mode` | Тёмная тема |
-| `@pytest.mark.cookie` | Cookie-баннер |
-| `@pytest.mark.seo` | Meta-теги |
-| `@pytest.mark.footer` | Футер |
-| `@pytest.mark.load_more` | Пагинация |
-| `@pytest.mark.empty_state` | Пустые состояния |
-| `@pytest.mark.mobile` | Мобильный viewport (390×844) |
-| `@pytest.mark.yandex` | Яндекс Браузер |
+
+| Маркер                    | Назначение                             |
+| ------------------------------- | ------------------------------------------------ |
+| `@pytest.mark.smoke`            | Sanity-проверка                          |
+| `@pytest.mark.unit`             | Изолированные тесты            |
+| `@pytest.mark.integration`      | Интеграция                             |
+| `@pytest.mark.e2e`              | Браузерная автоматизация  |
+| `@pytest.mark.visual`           | Визуальная регрессия          |
+| `@pytest.mark.responsive`       | Адаптивные вьюпорты            |
+| `@pytest.mark.error_handling`   | 404, офлайн, невалидный ввод |
+| `@pytest.mark.state_transition` | Навигационные потоки          |
+| `@pytest.mark.performance`      | Performance budget                               |
+| `@pytest.mark.accessibility`    | WCAG / клавиатура                      |
+| `@pytest.mark.flaky`            | Нестабильные (retry)                 |
+| `@pytest.mark.slow`             | > 30 секунд                                |
+| `@pytest.mark.dark_mode`        | Тёмная тема                            |
+| `@pytest.mark.cookie`           | Cookie-баннер                              |
+| `@pytest.mark.seo`              | Meta-теги                                    |
+| `@pytest.mark.footer`           | Футер                                       |
+| `@pytest.mark.load_more`        | Пагинация                               |
+| `@pytest.mark.empty_state`      | Пустые состояния                  |
+| `@pytest.mark.mobile`           | Мобильный viewport (390×844)           |
+| `@pytest.mark.yandex`           | Яндекс Браузер                      |
 
 ---
 
@@ -209,11 +212,12 @@ uv run pytest tests/e2e/test_visual_regression.py -v --update-baselines
 LOG_LEVEL=DEBUG uv run pytest tests/e2e/ -v
 ```
 
-| Место | Уровень | Пример |
-|-------|---------|--------|
-| `BasePage.goto()` | INFO | `Navigating to https://russia-tv.online/...` |
-| `BasePage.click()` | DEBUG | `Clicking selector: footer a` |
-| `BasePage.fill()` | DEBUG | `Filling selector input[type='search']` |
+
+| Место         | Уровень | Пример                                 |
+| ------------------ | -------------- | -------------------------------------------- |
+| `BasePage.goto()`  | INFO           | `Navigating to https://russia-tv.online/...` |
+| `BasePage.click()` | DEBUG          | `Clicking selector: footer a`                |
+| `BasePage.fill()`  | DEBUG          | `Filling selector input[type='search']`      |
 
 ---
 
@@ -221,12 +225,13 @@ LOG_LEVEL=DEBUG uv run pytest tests/e2e/ -v
 
 ### Локальные отчёты
 
-| Путь | Содержимое |
-|------|------------|
-| `reports/allure-results/` | Сырые результаты |
-| `reports/allure-report/` | HTML (после `make allure-html`) |
-| `reports/screenshots/` | Скриншоты |
-| `reports/traces/` | Playwright-трейсы |
+
+| Путь                  | Содержимое                |
+| ------------------------- | ----------------------------------- |
+| `reports/allure-results/` | Сырые результаты     |
+| `reports/allure-report/`  | HTML (после`make allure-html`) |
+| `reports/screenshots/`    | Скриншоты                  |
+| `reports/traces/`         | Playwright-трейсы             |
 
 ```bash
 make allure-html    # Сгенерировать
@@ -247,14 +252,15 @@ make coverage       # htmlcov/index.html
 
 Запуск: **Actions → Test Automation CI → Run workflow** (`workflow_dispatch`)
 
-| Suite | Что запускается |
-|-------|-----------------|
-| `lint` | Ruff + MyPy + Bandit |
-| `unit` | Быстрый фидбек |
-| `integration` | Доступность сайта |
-| `e2e` | Браузерная автоматизация (Chromium / Firefox / WebKit / Яндекс) |
-| `mobile` | Мобильные тесты |
-| `all` | Всё последовательно |
+
+| Suite         | Что запускается                                                                |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| `lint`        | Ruff + MyPy + Bandit                                                                         |
+| `unit`        | Быстрый фидбек                                                                  |
+| `integration` | Доступность сайта                                                            |
+| `e2e`         | Браузерная автоматизация (Chromium / Firefox / WebKit / Яндекс) |
+| `mobile`      | Мобильные тесты                                                                |
+| `all`         | Всё последовательно                                                        |
 
 **Артефакты**: `screenshots-*.zip`, `allure-results-*.zip`, `junit-*.xml`
 
@@ -262,7 +268,7 @@ make coverage       # htmlcov/index.html
 
 ## Автор
 
-**Yhtyyar** — QA Automation Engineer  
+**Yhtyyar** — QA Automation Engineer
 Email: [kadyrow1506@gmail.com](mailto:kadyrow1506@gmail.com)
 
 ---

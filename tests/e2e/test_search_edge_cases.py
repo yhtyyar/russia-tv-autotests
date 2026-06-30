@@ -13,6 +13,7 @@ from playwright.async_api import Page
 
 import allure
 from pages.home_page import HomePage
+from test_data.factories import SearchQueryFactory
 
 _DATA_PATH = Path(__file__).parent.parent.parent / "test_data" / "search_queries.json"
 _search_cases = json.loads(_DATA_PATH.read_text(encoding="utf-8"))["cases"]
@@ -20,6 +21,15 @@ _search_params = [
     pytest.param(c["query"], c["should_have_results"], id=c["id"])
     for c in _search_cases
 ]
+
+# Random valid queries from factory for exploratory testing
+_random_valid_queries = SearchQueryFactory.build_batch(
+    3, category="валидный", should_have_results=True
+)
+for q in _random_valid_queries:
+    _search_params.append(
+        pytest.param(q["query"], q["should_have_results"], id=f"faker_{q['id']}")
+    )
 
 
 @pytest.mark.e2e

@@ -3,6 +3,7 @@
 from typing import TypedDict
 
 from core.base_page import BasePage
+from core.self_healing import SelfHealingLocator
 
 
 class ChannelInfo(TypedDict):
@@ -93,22 +94,37 @@ class HomePage(BasePage):
         """
         await self.page.click(f"a:has-text('{name}')")
 
+    async def _get_search_locator(self) -> SelfHealingLocator:
+        """Вернуть self-healing локатор для поискового поля."""
+        return SelfHealingLocator(
+            self.page,
+            self._SEARCH_INPUT,
+            fallbacks=[self._SEARCH_INPUT_ALT],
+        )
+
     async def search(self, query: str) -> None:
-        """Ввести поисковый запрос.
+        """Ввести поисковый запрос с self-healing fallback.
 
         Args:
             query: Текст для ввода в поиск.
         """
-        await self.fill(self._SEARCH_INPUT, query)
-        await self.page.press(self._SEARCH_INPUT, "Enter")
+        locator = await self._get_search_locator()
+        search_input = await locator.find()
+        await search_input.fill(query)
+        await search_input.press("Enter")
 
     async def is_search_visible(self) -> bool:
-        """Проверить, видно ли поле поиска.
+        """Проверить, видно ли поле поиска (с self-healing).
 
         Returns:
             True, если поле поиска видно.
         """
-        return await self.is_element_visible(self._SEARCH_INPUT)
+        try:
+            locator = await self._get_search_locator()
+            search_input = await locator.find()
+            return await search_input.is_visible()
+        except Exception:
+            return False
 
     async def click_load_more(self) -> None:
         """Клик по кнопке «Показать ещё», если она есть."""
