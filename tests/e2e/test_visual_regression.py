@@ -55,7 +55,21 @@ async def test_home_page_desktop_baseline(
     home = HomePage(page)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
-    await page.screenshot(path=str(actual), full_page=True)
+
+    # Mask dynamic elements: time, weather, ads, counters, marquees
+    mask_selectors = [
+        '[class*="time" i]', '[class*="clock" i]', '[class*="weather" i]',
+        '[class*="ad" i]', '[class*="banner" i]', '[class*="counter" i]',
+        '[class*="marquee" i]', '[class*="ticker" i]', '[id*="ads" i]',
+    ]
+    mask_locators = [page.locator(sel) for sel in mask_selectors]
+
+    await page.screenshot(
+        path=str(actual),
+        full_page=True,
+        mask=mask_locators,
+        animations="disabled",
+    )
 
     if request.config.getoption("--update-baselines"):
         actual.rename(baseline)
@@ -90,7 +104,20 @@ async def test_home_page_mobile_baseline(
     home = HomePage(page_mobile)
     await home.goto()
     await home.expect_channels_loaded(timeout=15000)
-    await page_mobile.screenshot(path=str(actual), full_page=True)
+
+    mask_selectors = [
+        '[class*="time" i]', '[class*="clock" i]', '[class*="weather" i]',
+        '[class*="ad" i]', '[class*="banner" i]', '[class*="counter" i]',
+        '[class*="marquee" i]', '[class*="ticker" i]', '[id*="ads" i]',
+    ]
+    mask_locators = [page_mobile.locator(sel) for sel in mask_selectors]
+
+    await page_mobile.screenshot(
+        path=str(actual),
+        full_page=True,
+        mask=mask_locators,
+        animations="disabled",
+    )
 
     if request.config.getoption("--update-baselines"):
         actual.rename(baseline)
