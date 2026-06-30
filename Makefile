@@ -1,4 +1,4 @@
-.PHONY: install test lint format coverage clean e2e integration unit smoke visual regression allure allure-html dark cookie seo footer load-more empty keyboard channel date-picker
+.PHONY: install test lint format pre-commit coverage clean e2e integration unit smoke visual regression regression-flaky error state perf a11y dark cookie seo footer load-more empty keyboard channel date-picker e2e-trace allure allure-html
 
 install:
 	uv sync --extra dev
@@ -12,6 +12,9 @@ lint:
 format:
 	uv run ruff check . --fix
 	uv run ruff format .
+
+pre-commit:
+	uv run pre-commit run --all-files
 
 # Быстрые smoke-тесты (< 2 мин)
 smoke:
