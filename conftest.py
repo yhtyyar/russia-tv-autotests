@@ -37,9 +37,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(
-    item: pytest.Item, call: pytest.CallInfo[None]
-) -> None:
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo[None]) -> None:
     """Track test outcome for artifact collection in fixture teardown."""
     outcome = yield
     report = outcome.get_result()
@@ -80,9 +78,7 @@ async def browser(playwright_instance: Playwright) -> AsyncGenerator[Browser, No
             executable_path=yandex_path,
         )
     else:
-        browser_type = getattr(
-            playwright_instance, s.browser, playwright_instance.chromium
-        )
+        browser_type = getattr(playwright_instance, s.browser, playwright_instance.chromium)
         b = await launch_browser(
             browser_type=browser_type,
             headless=s.headless,
@@ -109,9 +105,7 @@ async def context(
         trace_path = f"reports/traces/{request.node.name}.zip"
         os.makedirs("reports/traces", exist_ok=True)
         await ctx.tracing.stop(path=trace_path)
-        allure.attach.file(
-            trace_path, name="trace", attachment_type=allure.attachment_type.ZIP
-        )
+        allure.attach.file(trace_path, name="trace", attachment_type=allure.attachment_type.ZIP)
     await ctx.close()
 
 
@@ -140,9 +134,7 @@ async def mobile_context(
         trace_path = f"reports/traces/{request.node.name}.zip"
         os.makedirs("reports/traces", exist_ok=True)
         await ctx.tracing.stop(path=trace_path)
-        allure.attach.file(
-            trace_path, name="trace", attachment_type=allure.attachment_type.ZIP
-        )
+        allure.attach.file(trace_path, name="trace", attachment_type=allure.attachment_type.ZIP)
     await ctx.close()
 
 
@@ -295,10 +287,12 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
         # Apply via dynamic Allure API if available
         try:
             import allure
+
             allure.dynamic.feature(feature)
             allure.dynamic.story(story)
-            allure.dynamic.severity(getattr(allure.severity_level, severity))
-        except Exception:
+            sev = getattr(allure.severity_level, severity)  # type: ignore[attr-defined]
+            allure.dynamic.severity(sev)
+        except (ImportError, AttributeError):
             pass
 
 
