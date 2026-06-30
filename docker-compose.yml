@@ -1,0 +1,15 @@
+services:
+  tests:
+    build: .
+    container_name: russia-tv-tests
+    volumes:
+      - ./reports:/app/reports
+      - ./reports/screenshots:/app/reports/screenshots
+      - ./reports/videos:/app/reports/videos
+    environment:
+      - HEADLESS=true
+      - BROWSER=chromium
+    command: >
+      uv run pytest tests/e2e/ -v --alluredir=reports/allure-results
+      --junitxml=reports/junit-e2e.xml --tracing
+    working_dir: /app
