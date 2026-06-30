@@ -1,14 +1,11 @@
 """Тесты граничных случаев поиска с использованием разбиения на эквивалентные классы + предугадывание ошибок.
 
-Разбиения для поискового запроса:
-- Пустая строка (невалидно)
-- Один символ (граница, валидно)
-- Нормальный запрос 3-30 символов (валидно)
-- Максимальная длина / очень длинный (невалидно/граница)
-- Спецсимволы (граница валидности)
-- SQL-инъекция / XSS (безопасность, невалидно)
-- Только Unicode/кириллица (валидно)
+Данные загружаются из test_data/search_queries.json — добавляй новые кейсы
+без изменения кода.
 """
+
+import json
+from pathlib import Path
 
 import pytest
 from allure_commons.types import Severity
@@ -17,24 +14,19 @@ from playwright.async_api import Page
 import allure
 from pages.home_page import HomePage
 
+_DATA_PATH = Path(__file__).parent.parent.parent / "test_data" / "search_queries.json"
+_search_cases = json.loads(_DATA_PATH.read_text(encoding="utf-8"))["cases"]
+_search_params = [
+    pytest.param(c["query"], c["should_have_results"], id=c["id"])
+    for c in _search_cases
+]
+
 
 @pytest.mark.e2e
-@pytest.mark.parametrize(
-    "query,should_have_results",
-    [
-        pytest.param("", False, id="empty_query"),
-        pytest.param("а", True, id="single_cyrillic_char"),
-        pytest.param("Первый", True, id="normal_cyrillic"),
-        pytest.param("a" * 200, False, id="very_long_200_chars"),
-        pytest.param("<script>alert(1)</script>", False, id="xss_payload"),
-        pytest.param("'; DROP TABLE channels; --", False, id="sql_injection"),
-        pytest.param("Мир", True, id="common_word"),
-        pytest.param("!@#$%^&*()", False, id="special_chars_only"),
-    ],
-)
+@pytest.mark.parametrize("query,should_have_results", _search_params)
 @pytest.mark.asyncio
-@allure.feature("граничных случаев поиска")
-@allure.story("Поиск с различными разбиениями входных данных")
+@allure.feature("Поиск")
+@allure.story("Эквивалентное разбиение + граничные значения")
 @allure.severity(Severity.NORMAL)
 async def test_search_equivalence_partitioning(
     page: Page, query: str, should_have_results: bool
@@ -50,11 +42,8 @@ async def test_search_equivalence_partitioning(
     await home.search(query)
     await page.wait_for_load_state("networkidle")
 
-    # For empty/invalid queries we expect no URL change or same page
     current_url = page.url
     if not should_have_results:
-        # Page should stay on home or show empty results
         assert "search" not in current_url or home.url in current_url
     else:
-        # Should either stay on page with results or navigate to search
         assert home.url in current_url or "search" in current_url
