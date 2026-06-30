@@ -8,12 +8,31 @@
 """
 
 import json
+from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 from playwright.async_api import Page
 
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
+
+_HISTORY_PATH = Path("reports/performance/history.json")
+
+
+def _save_vitals(page_name: str, vitals: dict) -> None:
+    """Append vitals to performance history JSON."""
+    _HISTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    history: list = []
+    if _HISTORY_PATH.exists():
+        history = json.loads(_HISTORY_PATH.read_text(encoding="utf-8"))
+    # Find today's entry or create new
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    entry = {"timestamp": today, "pages": {page_name: vitals}}
+    history.append(entry)
+    # Keep last 50 runs
+    history = history[-50:]
+    _HISTORY_PATH.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 # Thresholds per Google Core Web Vitals
@@ -69,6 +88,7 @@ async def test_home_page_web_vitals(page: Page):
     await home.expect_channels_loaded(timeout=15000)
 
     vitals = await page.evaluate(VITALS_SCRIPT)
+    _save_vitals("Главная", vitals)
 
     assert vitals.get("FCP", float("inf")) < VITALS_BUDGET["FCP"], (
         f"FCP {vitals.get('FCP')}ms exceeds budget {VITALS_BUDGET['FCP']}ms"
@@ -94,6 +114,7 @@ async def test_schedule_page_web_vitals(page: Page):
     await schedule.wait_for_load("domcontentloaded")
 
     vitals = await page.evaluate(VITALS_SCRIPT)
+    _save_vitals("Расписание", vitals)
 
     assert vitals.get("FCP", float("inf")) < VITALS_BUDGET["FCP"], (
         f"FCP {vitals.get('FCP')}ms exceeds budget {VITALS_BUDGET['FCP']}ms"

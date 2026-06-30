@@ -9,7 +9,6 @@
 [![MyPy](https://img.shields.io/badge/MyPy-strict-2A6DB8?logo=python)](https://mypy-lang.org/)
 [![Bandit](https://img.shields.io/badge/Bandit-SAST-red?logo=bandit)](https://bandit.readthedocs.io/)
 [![Allure](https://img.shields.io/badge/Allure-Report-orange?logo=allure)](https://docs.qameta.io/allure/)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
 </div>
 
@@ -17,7 +16,8 @@
 
 Профессиональный фреймворк автоматизированного тестирования для [russia-tv.online](https://russia-tv.online/) — телепрограммы на Nuxt.js SPA.
 
-**[Allure-отчётность](https://yhtyyar.github.io/russia-tv-autotests/allure/)** — тренды, скриншоты, история прогонов.
+**[Allure-отчётность](https://yhtyyar.github.io/russia-tv-autotests/allure/)** — тренды, скриншоты, история прогонов.  
+**[Performance Dashboard](https://yhtyyar.github.io/russia-tv-autotests/perf/)** — Core Web Vitals, история метрик, отклонения.
 
 ---
 
@@ -245,6 +245,12 @@ make coverage       # htmlcov/index.html
 **`https://yhtyyar.github.io/russia-tv-autotests/allure/`**
 
 Живой отчёт с трендами, скриншотами и историей прогонов. Обновляется автоматически после каждого CI-прогона.
+
+### Performance Dashboard
+
+**`https://yhtyyar.github.io/russia-tv-autotests/perf/`**
+
+Core Web Vitals (LCP, CLS, FCP, TTFB) с историей прогонов, трендами и сравнением с бюджетом. Обновляется автоматически.
 
 ---
 

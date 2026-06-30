@@ -152,6 +152,15 @@ jobs:
         with:
           name: allure-results-${{ matrix.browser }}
           path: reports/allure-results/
+      - name: Генерация Performance Dashboard
+        if: matrix.browser == 'chromium'
+        run: uv run python scripts/generate_perf_dashboard.py
+      - name: Загрузка Performance Dashboard
+        if: matrix.browser == 'chromium' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-dashboard
+          path: perf/
       - name: Загрузка скриншотов
         if: failure()
         uses: actions/upload-artifact@v4
@@ -308,17 +317,24 @@ jobs:
           sed -i "s|\\${COMMIT}|${{ github.sha }}|g" allure-results/environment.properties
           echo "Конфигурация Allure скопирована"
 
+      - name: Скачать Performance Dashboard
+        uses: actions/download-artifact@v4
+        with:
+          name: perf-dashboard
+          path: perf/
+        continue-on-error: true
+
       - name: Генерация Allure Report
         run: allure generate allure-results -o allure --clean
 
-      - name: Коммит и пуш Allure Report
+      - name: Коммит и пуш отчётов
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add allure/
+          git add allure/ perf/
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "ci: update Allure Report [skip ci]"
+            git commit -m "ci: update Allure Report + Performance Dashboard [skip ci]"
             git push
           fi
