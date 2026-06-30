@@ -17,7 +17,7 @@
 
 Профессиональный фреймворк автоматизированного тестирования для [russia-tv.online](https://russia-tv.online/) — телепрограммы на Nuxt.js SPA.
 
-Проект создан для демонстрации production-практик QA-инженерии: асинхронная архитектура, Page Object Model, CI/CD с матричным тестированием, security-сканирование и комплексная отчётность.
+**[Живая Allure-отчётность](https://yhtyyar.github.io/russia-tv-autotests/allure/)** — тренды, скриншоты, история прогонов.
 
 ---
 
@@ -78,14 +78,14 @@ russia-tv-tests/
 
 ## Ключевые архитектурные решения
 
-1. **Async-first**: Все взаимодействия с браузером через `async/await` для производительности и корректной работы с Playwright
-2. **Type Safety**: Полная типизация с TypedDict, MyPy strict mode, отсутствие `Any` в публичных API
-3. **Обработка ошибок**: Кастомные доменные исключения (`BrowserError`, `FrameworkError`) со структурированным логированием
-4. **SOLID**: У каждого класса одна ответственность; нет God-классов
-5. **Безопасность**: Bandit SAST-сканирование в CI; секретов в репозитории нет
-6. **Наблюдаемость**: Allure-отчёты со скриншотами при падении + INFO/DEBUG логи во всех Page Objects
-7. **Стабильность**: Все `wait_for_timeout` заменены на explicit waits (`wait_for_load_state`, `wait_for_selector`, `wait_for_function`)
-8. **CI/CD по требованию**: Ручной запуск через `workflow_dispatch` для экономии GitHub Actions минут
+1. **Async-first** — `async/await` для Playwright
+2. **Type Safety** — TypedDict + MyPy strict
+3. **Обработка ошибок** — кастомные исключения с логированием
+4. **SOLID** — одна ответственность на класс
+5. **Безопасность** — Bandit SAST в CI
+6. **Наблюдаемость** — Allure + скриншоты + логи
+7. **Стабильность** — explicit waits вместо фиксированных пауз
+8. **CI/CD по требованию** — `workflow_dispatch`
 
 ---
 
@@ -96,20 +96,20 @@ russia-tv-tests/
 | **Smoke** | 1 | 4 | ~30 s | Критические пути | — |
 | **Unit** | 2 | 18 | < 1 s | Чистая логика | — |
 | **Integration** | 2 | 7 | ~10 s | Доступность сайта, performance budget | Граничные значения |
-| **E2E** | 15 | 55+ | ~120 s | Браузерная автоматизация, UX, SEO, a11y | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
-| **Mobile** | 2 | 14 | ~90 s | Мобильный viewport (390×844), touch, адаптивность, SPA навигация | Попарное тестирование |
+| **E2E** | 15 | 55+ | ~120 s | Браузерная автоматизация | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
+| **Mobile** | 2 | 14 | ~90 s | Мобильный viewport, touch, SPA навигация | Попарное тестирование |
 
-**Итого**: 85+ тестов, покрывающих только внешние пользовательские сценарии.
+**Итого**: 85+ тестов.
 
 ---
 
 ## Применённые техники дизайна тестов
 
-1. **Эквивалентное разбиение** — Поисковый ввод разделён на валидные/невалидные классы (пустой, 1 символ, нормальный, XSS, SQL injection, спецсимволы, Unicode)
-2. **Анализ граничных значений** — Performance budget (пороги 2.0 s / 2.5 s), лимиты времени ответа
-3. **Тестирование диаграммы состояний** — Навигация: Главная ↔ Расписание ↔ Карточка канала с возвратом и перезагрузкой
-4. **Предугадывание ошибок** — 404-страницы, невалидные URL-параметры, офлайн-режим, медленная сеть 3G
-5. **Попарное тестирование** — Адаптивные вьюпорты (мобильный 375×667, планшет 768×1024, десктоп 1920×1080)
+1. **Эквивалентное разбиение** — поисковый ввод (валидные, невалидные, XSS, Unicode)
+2. **Анализ граничных значений** — performance budget (2.0 s / 2.5 s)
+3. **Диаграмма состояний** — навигация Главная ↔ Расписание ↔ Канал
+4. **Предугадывание ошибок** — 404, офлайн, медленная сеть 3G
+5. **Попарное тестирование** — вьюпорты (375×667, 768×1024, 1920×1080)
 
 ---
 
@@ -117,50 +117,36 @@ russia-tv-tests/
 
 | Маркер | Назначение |
 |--------|------------|
-| `@pytest.mark.smoke` | Быстрая sanity-проверка перед глубокой регрессией |
-| `@pytest.mark.unit` | Изолированные тесты логики |
-| `@pytest.mark.integration` | Интеграционные тесты |
+| `@pytest.mark.smoke` | Sanity-проверка |
+| `@pytest.mark.unit` | Изолированные тесты |
+| `@pytest.mark.integration` | Интеграция |
 | `@pytest.mark.e2e` | Браузерная автоматизация |
-| `@pytest.mark.visual` | Сравнение скриншотов (требуются базовые) |
-| `@pytest.mark.responsive` | Тесты на мобильные/планшетные вьюпорты |
+| `@pytest.mark.visual` | Визуальная регрессия |
+| `@pytest.mark.responsive` | Адаптивные вьюпорты |
 | `@pytest.mark.error_handling` | 404, офлайн, невалидный ввод |
-| `@pytest.mark.state_transition` | Тесты навигационных потоков |
-| `@pytest.mark.performance` | Бюджеты времени загрузки страниц |
-| `@pytest.mark.accessibility` | WCAG / фокус с клавиатуры |
-| `@pytest.mark.flaky` | Известные нестабильные тесты (retry включён) |
-| `@pytest.mark.slow` | Тесты > 30 секунд |
-| `@pytest.mark.dark_mode` | Тесты переключения темы |
-| `@pytest.mark.cookie` | Тесты cookie-баннера |
-| `@pytest.mark.seo` | Тесты meta-тегов и SEO |
-| `@pytest.mark.footer` | Тесты ссылок в футере |
-| `@pytest.mark.load_more` | Тесты пагинации / «Показать ещё» |
-| `@pytest.mark.empty_state` | Тесты пустых состояний |
-| `@pytest.mark.mobile` | Мобильный viewport (iPhone 14 Pro, 390×844) |
-| `@pytest.mark.yandex` | Тесты специфичные для Яндекс Браузера |
+| `@pytest.mark.state_transition` | Навигационные потоки |
+| `@pytest.mark.performance` | Performance budget |
+| `@pytest.mark.accessibility` | WCAG / клавиатура |
+| `@pytest.mark.flaky` | Нестабильные (retry) |
+| `@pytest.mark.slow` | > 30 секунд |
+| `@pytest.mark.dark_mode` | Тёмная тема |
+| `@pytest.mark.cookie` | Cookie-баннер |
+| `@pytest.mark.seo` | Meta-теги |
+| `@pytest.mark.footer` | Футер |
+| `@pytest.mark.load_more` | Пагинация |
+| `@pytest.mark.empty_state` | Пустые состояния |
+| `@pytest.mark.mobile` | Мобильный viewport (390×844) |
+| `@pytest.mark.yandex` | Яндекс Браузер |
 
 ---
 
 ## Установка
 
 ```bash
-# Клонировать репозиторий
 git clone https://github.com/yhtyyar/russia-tv-autotests.git
 cd russia-tv-autotests
-
-# Установка зависимостей и браузеров
 make install
-
-# Или вручную:
-uv sync --extra dev
-uv run playwright install
-npm ci                # локальный axe-core для accessibility-тестов
-
-# (Опционально) Установить Яндекс Браузер для E2E-тестов в нём:
-# Linux:  sudo snap install yandex-browser
-# macOS:  brew install --cask yandex
-# Windows: choco install yandex-browser
-
-# Создать файл окружения
+# Или вручную: uv sync --extra dev && uv run playwright install && npm ci
 cp .env.example .env
 ```
 
@@ -168,129 +154,64 @@ cp .env.example .env
 
 ## Запуск тестов
 
-Все команды доступны через `Makefile`:
-
 ```bash
-# Быстрая sanity-проверка — только smoke (< 2 мин)
-make smoke
+# Основные наборы
+make smoke          # Sanity (< 2 мин)
+make unit           # Изолированные тесты
+make integration    # Доступность + performance
+make e2e            # Браузерная автоматизация
+make mobile         # iPhone 14 Pro viewport
+make yandex         # Яндекс Браузер
+make regression     # Всё, кроме визуала
+make regression-flaky # С retry flaky
 
-# Unit-тесты (самый быстрый фидбек)
-make unit
+# Специализированные
+make visual         # Визуальная регрессия
+make visual-update  # Обновить baseline
+make error          # Граничные случаи
+make state          # Навигационные потоки
+make perf           # Performance budget
+make a11y           # Accessibility
+make dark           # Тёмная тема
+make cookie         # Cookie-баннер
+make seo            # Meta-теги
+make footer         # Футер
+make load-more      # Пагинация
+make empty          # Пустые состояния
+make keyboard       # Клавиатура
+make channel        # Страница канала
+make date-picker    # Выбор даты
 
-# Интеграционные тесты
-make integration
-
-# E2E-тесты (браузерная автоматизация)
-make e2e
-
-# Визуальная регрессия (требуются базовые скриншоты)
-make visual
-
-# Обновить базовые скриншоты после запланированных изменений UI
-make visual-update
-
-# Полная регрессия (unit + integration + e2e, без визуала)
-make regression
-
-# Регрессия с автоматическим retry нестабильных тестов
-make regression-flaky
-
-# Обработка ошибок и граничные случаи
-make error
-
-# Тесты навигационных потоков
-make state
-
-# Тесты performance budget
-make perf
-
-# Accessibility (WCAG) тесты
-make a11y
-
-# Тесты тёмной темы
-make dark
-
-# Тесты cookie-баннера
-make cookie
-
-# Тесты SEO и meta-тегов
-make seo
-
-# Тесты футера и навигации
-make footer
-
-# Тесты «Показать ещё» / пагинации
-make load-more
-
-# Тесты пустых состояний
-make empty
-
-# Тесты клавиатурной навигации
-make keyboard
-
-# Тесты страницы канала
-make channel
-
-# Тесты выбора даты
-make date-picker
-
-# E2E с Playwright tracing для упавших тестов
-make e2e-trace
-
-# Mobile E2E-тесты (iPhone 14 Pro viewport, touch-events)
-make mobile
-
-# E2E в Яндекс Браузере (требуется установленный Yandex Browser)
-make yandex
-
-# Быстрая проверка перед коммитом (unit + integration)
-make test
-
-# С покрытием кода
-make coverage
+# Утилиты
+make e2e-trace      # С Playwright tracing
+make coverage       # Покрытие кода
+make allure-html    # Сгенерировать Allure HTML
+make allure         # Открыть Allure в браузере
+make test           # unit + integration (быстро)
 ```
 
 ### Прямые команды pytest
 
 ```bash
-# Только smoke
 uv run pytest tests/smoke/ -v
-
-# Всё, кроме медленных
 uv run pytest -m "not slow" -v
-
-# Конкретные маркеры
 uv run pytest -m "smoke or unit" -v
-
-# Обновить базовые скриншоты визуальной регрессии
-uv run pytest tests/e2e/test_visual_regression.py -v --update-baselines
-
-# Mobile тесты
 uv run pytest tests/e2e/ -v -m mobile
-
-# E2E в Яндекс Браузере
 BROWSER=yandex uv run pytest tests/e2e/ -v -m "not mobile"
+uv run pytest tests/e2e/test_visual_regression.py -v --update-baselines
 ```
 
 ---
 
 ## Логирование
 
-Фреймворк использует стандартный модуль `logging` с префиксом `russia_tv_tests`.
-
-- **Уровень по умолчанию**: `INFO`
-- **Переменная окружения**: `LOG_LEVEL` (DEBUG, INFO, WARNING, ERROR)
-
 ```bash
 LOG_LEVEL=DEBUG uv run pytest tests/e2e/ -v
 ```
 
-### Что логируется
-
-| Место | Уровень | Сообщение |
-|-------|---------|-----------|
+| Место | Уровень | Пример |
+|-------|---------|--------|
 | `BasePage.goto()` | INFO | `Navigating to https://russia-tv.online/...` |
-| `BasePage.goto()` | INFO | `Loaded https://russia-tv.online/...` |
 | `BasePage.click()` | DEBUG | `Clicking selector: footer a` |
 | `BasePage.fill()` | DEBUG | `Filling selector input[type='search']` |
 
@@ -298,94 +219,44 @@ LOG_LEVEL=DEBUG uv run pytest tests/e2e/ -v
 
 ## Отчётность
 
-### Allure HTML Report
-
-Генерация статического HTML-отчёта (требуется установленный Allure CLI):
-
-```bash
-# Сгенерировать статический HTML
-make allure-html
-
-# Открыть интерактивный отчёт в браузере
-make allure
-```
-
-Отчёты пишутся в:
+### Локальные отчёты
 
 | Путь | Содержимое |
 |------|------------|
-| `reports/allure-results/` | Сырые результаты тестов |
-| `reports/allure-report/` | Сгенерированные HTML-страницы (после `make allure-html`) |
-| `reports/screenshots/` | Скриншоты, сделанные во время выполнения |
-| `reports/traces/` | Playwright-трейсы упавших тестов (при `--tracing`) |
+| `reports/allure-results/` | Сырые результаты |
+| `reports/allure-report/` | HTML (после `make allure-html`) |
+| `reports/screenshots/` | Скриншоты |
+| `reports/traces/` | Playwright-трейсы |
+
+```bash
+make allure-html    # Сгенерировать
+make allure         # Открыть в браузере
+make e2e-trace      # С Playwright tracing
+make coverage       # htmlcov/index.html
+```
 
 ### Allure на GitHub Pages
 
-После каждого запуска CI Allure Report автоматически публикуется на GitHub Pages:
-
 **`https://yhtyyar.github.io/russia-tv-autotests/allure/`**
 
-Отчёт содержит:
-- Тренды по всем прогонам (история сохраняется между запусками)
-- Категории дефектов ( flaky, broken, failed)
-- Скриншоты и трейсы прикреплены к упавшим тестам
-- Распределение по severity, tags, suites
-
-### Playwright Tracing
-
-Для отладки упавших E2E-тестов записываются полные Playwright-трейсы:
-
-```bash
-# E2E с tracing (сохраняет .zip для каждого упавшего теста)
-make e2e-trace
-
-# Трейсы сохраняются в reports/traces/<test_name>.zip
-# Открыть: npx playwright show-trace reports/traces/<name>.zip
-```
-
-### Отчёт о покрытии
-
-```bash
-make coverage
-# Откроет: htmlcov/index.html
-```
+Живой отчёт с трендами, скриншотами и историей прогонов. Обновляется автоматически после каждого CI-прогона.
 
 ---
 
 ## CI/CD
 
-CI/CD настроен **исключительно для ручного запуска** (`workflow_dispatch`) для экономии GitHub Actions минут.
+Запуск: **Actions → Test Automation CI → Run workflow** (`workflow_dispatch`)
 
-### Запуск CI из GitHub
+| Suite | Что запускается |
+|-------|-----------------|
+| `lint` | Ruff + MyPy + Bandit |
+| `unit` | Быстрый фидбек |
+| `integration` | Доступность сайта |
+| `e2e` | Браузерная автоматизация (Chromium / Firefox / WebKit / Яндекс) |
+| `mobile` | Мобильные тесты |
+| `all` | Всё последовательно |
 
-1. Перейти в **Actions** → **Test Automation CI**
-2. Нажать **Run workflow**
-3. Выбрать набор тестов:
-   - `lint` — Ruff + MyPy + Bandit
-   - `unit` — Быстрый фидбек
-   - `integration` — Валидация доступности сайта
-   - `e2e` — Браузерная автоматизация (Chromium / Firefox / WebKit / **Яндекс**)
-   - `mobile` — Мобильные тесты (iPhone 14 Pro viewport)
-   - `all` — Всё последовательно
-
-### Артефакты CI
-
-При падении автоматически загружаются:
-
-- `screenshots-<browser>.zip` — скриншоты упавших тестов
-- `screenshots-mobile.zip` — скриншоты mobile-тестов
-- `allure-results-<browser>.zip` — сырые данные для Allure
-- `junit-*.xml` — JUnit-compatible отчёты для интеграции с dashboards
-
-### Allure Report на GitHub Pages
-
-После каждого завершения CI (даже при частичных падениях) запускается job `allure-report`, который:
-1. Собирает `allure-results` из всех job (unit, integration, e2e, mobile)
-2. Подгружает историю предыдущих прогонов из ветки `gh-pages`
-3. Генерирует полный HTML-отчёт с трендами
-4. Публикует в папку `/allure/` на GitHub Pages (`keep_files: true` — существующий сайт не затрагивается)
-
-**Прямая ссылка:** `https://yhtyyar.github.io/russia-tv-autotests/allure/`
+**Артефакты**: `screenshots-*.zip`, `allure-results-*.zip`, `junit-*.xml`
 
 ---
 
