@@ -7,13 +7,18 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("«Показать ещё» / пагинации на главной странице")
+@allure.story("Кнопка «Показать ещё» должна быть видна, когда есть дополнительные каналы")
+@allure.severity(Severity.NORMAL)
 async def test_load_more_button_visible(page: Page):
     """Кнопка «Показать ещё» должна быть видна, когда есть дополнительные каналы."""
     home = HomePage(page)
@@ -28,6 +33,9 @@ async def test_load_more_button_visible(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("«Показать ещё» / пагинации на главной странице")
+@allure.story("Клик по «Показать ещё» должен увеличивать количество видимых каналов")
+@allure.severity(Severity.NORMAL)
 async def test_load_more_increases_channel_count(page: Page):
     """Клик по «Показать ещё» должен увеличивать количество видимых каналов."""
     home = HomePage(page)
@@ -54,6 +62,9 @@ async def test_load_more_increases_channel_count(page: Page):
 @pytest.mark.e2e
 @pytest.mark.responsive
 @pytest.mark.asyncio
+@allure.feature("«Показать ещё» / пагинации на главной странице")
+@allure.story("«Показать ещё» должен работать на мобильном вьюпорте")
+@allure.severity(Severity.NORMAL)
 async def test_load_more_on_mobile(page: Page):
     """«Показать ещё» должен работать на мобильном вьюпорте."""
     await page.set_viewport_size({"width": 375, "height": 667})

@@ -8,8 +8,10 @@ import warnings
 
 import pytest
 import pytest_check as check
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
 
@@ -21,6 +23,9 @@ from pages.schedule_page import SchedulePage
     strict=False,
 )
 @pytest.mark.asyncio
+@allure.feature("доступности")
+@allure.story("Главная страница не должна иметь критических нарушений доступности")
+@allure.severity(Severity.MINOR)
 async def test_home_page_accessibility(page: Page):
     """Главная страница не должна иметь критических нарушений доступности."""
     home = HomePage(page)
@@ -63,6 +68,9 @@ async def test_home_page_accessibility(page: Page):
     strict=False,
 )
 @pytest.mark.asyncio
+@allure.feature("доступности")
+@allure.story("Страница расписания не должна иметь критических нарушений доступности")
+@allure.severity(Severity.MINOR)
 async def test_schedule_page_accessibility(page: Page):
     """Страница расписания не должна иметь критических нарушений доступности."""
     schedule = SchedulePage(page)
@@ -98,6 +106,9 @@ async def test_schedule_page_accessibility(page: Page):
 @pytest.mark.e2e
 @pytest.mark.accessibility
 @pytest.mark.asyncio
+@allure.feature("доступности")
+@allure.story("Поле поиска должно быть доступно для фокуса с клавиатуры")
+@allure.severity(Severity.MINOR)
 async def test_focus_management_on_search(page: Page):
     """Поле поиска должно быть доступно для фокуса с клавиатуры."""
     home = HomePage(page)

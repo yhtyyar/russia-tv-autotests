@@ -11,8 +11,10 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 
 
@@ -31,6 +33,9 @@ from pages.home_page import HomePage
     ],
 )
 @pytest.mark.asyncio
+@allure.feature("граничных случаев поиска")
+@allure.story("Поиск с различными разбиениями входных данных")
+@allure.severity(Severity.NORMAL)
 async def test_search_equivalence_partitioning(
     page: Page, query: str, should_have_results: bool
 ):

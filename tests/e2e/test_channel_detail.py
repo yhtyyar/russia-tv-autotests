@@ -9,14 +9,19 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.channel_page import ChannelPage
 from pages.home_page import HomePage
 
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("страницы канала")
+@allure.story("Страница канала должна загружаться и отображать название канала")
+@allure.severity(Severity.NORMAL)
 async def test_channel_page_loads_and_shows_name(page: Page):
     """Страница канала должна загружаться и отображать название канала."""
     channel = ChannelPage(page)
@@ -32,6 +37,9 @@ async def test_channel_page_loads_and_shows_name(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("страницы канала")
+@allure.story("Страница канала должна показывать передачи или пустое состояние, не падать")
+@allure.severity(Severity.NORMAL)
 async def test_channel_page_has_programs_or_empty_state(page: Page):
     """Страница канала должна показывать передачи или пустое состояние, не падать."""
     channel = ChannelPage(page)
@@ -49,6 +57,9 @@ async def test_channel_page_has_programs_or_empty_state(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("страницы канала")
+@allure.story("Страница канала может показывать индикатор текущей передачи")
+@allure.severity(Severity.NORMAL)
 async def test_channel_page_current_program_indicator(page: Page):
     """Страница канала может показывать индикатор текущей передачи."""
     channel = ChannelPage(page)
@@ -65,6 +76,9 @@ async def test_channel_page_current_program_indicator(page: Page):
 @pytest.mark.e2e
 @pytest.mark.state_transition
 @pytest.mark.asyncio
+@allure.feature("страницы канала")
+@allure.story("Пользователь может перейти со страницы канала обратно на главную")
+@allure.severity(Severity.NORMAL)
 async def test_channel_to_home_navigation(page: Page):
     """Пользователь может перейти со страницы канала обратно на главную."""
     channel = ChannelPage(page)
@@ -80,6 +94,9 @@ async def test_channel_to_home_navigation(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("страницы канала")
+@allure.story("Страница канала должна иметь title и meta-теги")
+@allure.severity(Severity.NORMAL)
 async def test_channel_page_meta_tags(page: Page):
     """Страница канала должна иметь title и meta-теги."""
     channel = ChannelPage(page)

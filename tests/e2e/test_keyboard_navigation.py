@@ -8,14 +8,19 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 
 
 @pytest.mark.e2e
 @pytest.mark.accessibility
 @pytest.mark.asyncio
+@allure.feature("клавиатурной навигации и доступности")
+@allure.story("Tab должен перемещать фокус по интерактивным элементам")
+@allure.severity(Severity.MINOR)
 async def test_home_page_tab_navigation(page: Page):
     """Tab должен перемещать фокус по интерактивным элементам."""
     home = HomePage(page)
@@ -37,6 +42,9 @@ async def test_home_page_tab_navigation(page: Page):
 @pytest.mark.e2e
 @pytest.mark.accessibility
 @pytest.mark.asyncio
+@allure.feature("клавиатурной навигации и доступности")
+@allure.story("Поле поиска должно быть доступно для фокуса с клавиатуры")
+@allure.severity(Severity.MINOR)
 async def test_search_input_focusable(page: Page):
     """Поле поиска должно быть доступно для фокуса с клавиатуры."""
     home = HomePage(page)
@@ -63,6 +71,9 @@ async def test_search_input_focusable(page: Page):
 @pytest.mark.e2e
 @pytest.mark.accessibility
 @pytest.mark.asyncio
+@allure.feature("клавиатурной навигации и доступности")
+@allure.story("Нажатие Enter в поиске должно отправлять запрос")
+@allure.severity(Severity.MINOR)
 async def test_enter_key_activates_search(page: Page):
     """Нажатие Enter в поиске должно отправлять запрос."""
     home = HomePage(page)
@@ -86,6 +97,9 @@ async def test_enter_key_activates_search(page: Page):
 @pytest.mark.e2e
 @pytest.mark.accessibility
 @pytest.mark.asyncio
+@allure.feature("клавиатурной навигации и доступности")
+@allure.story("Сфокусированные элементы должны иметь видимый индикатор фокуса")
+@allure.severity(Severity.MINOR)
 async def test_focus_visible_styles(page: Page):
     """Сфокусированные элементы должны иметь видимый индикатор фокуса."""
     home = HomePage(page)

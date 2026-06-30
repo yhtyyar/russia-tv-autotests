@@ -1,14 +1,19 @@
 """E2E-тесты навигации по датам в расписании."""
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
 
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("навигации по датам в расписании")
+@allure.story("Страница расписания должна загружаться со ссылками каналов")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_page_loads(page: Page):
     """Страница расписания должна загружаться со ссылками каналов."""
     schedule = SchedulePage(page)
@@ -24,6 +29,9 @@ async def test_schedule_page_loads(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("навигации по датам в расписании")
+@allure.story("Пользователь может перейти с главной на страницу расписания")
+@allure.severity(Severity.NORMAL)
 async def test_navigation_from_home_to_schedule(page: Page):
     """Пользователь может перейти с главной на страницу расписания."""
     home = HomePage(page)

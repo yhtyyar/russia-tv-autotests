@@ -8,8 +8,10 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.channel_page import ChannelPage
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
@@ -17,6 +19,9 @@ from pages.schedule_page import SchedulePage
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("тёмной темы / переключателя темы")
+@allure.story("Переключатель тёмной темы должен быть виден на главной странице")
+@allure.severity(Severity.NORMAL)
 async def test_home_page_dark_mode_toggle_exists(page: Page):
     """Переключатель тёмной темы должен быть виден на главной странице."""
     home = HomePage(page)
@@ -30,6 +35,9 @@ async def test_home_page_dark_mode_toggle_exists(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("тёмной темы / переключателя темы")
+@allure.story("Клик по переключателю должен менять состояние тёмной темы на главной")
+@allure.severity(Severity.NORMAL)
 async def test_home_page_toggle_dark_mode(page: Page):
     """Клик по переключателю должен менять состояние тёмной темы на главной."""
     home = HomePage(page)
@@ -48,6 +56,9 @@ async def test_home_page_toggle_dark_mode(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("тёмной темы / переключателя темы")
+@allure.story("Переключатель тёмной темы должен работать на странице расписания")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_page_dark_mode_toggle(page: Page):
     """Переключатель тёмной темы должен работать на странице расписания."""
     schedule = SchedulePage(page)
@@ -66,6 +77,9 @@ async def test_schedule_page_dark_mode_toggle(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("тёмной темы / переключателя темы")
+@allure.story("Состояние тёмной темы должно сохраняться при навигации между страницами")
+@allure.severity(Severity.NORMAL)
 async def test_dark_mode_persists_across_navigation(page: Page):
     """Состояние тёмной темы должно сохраняться при навигации между страницами."""
     home = HomePage(page)
@@ -94,6 +108,9 @@ async def test_dark_mode_persists_across_navigation(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("тёмной темы / переключателя темы")
+@allure.story("Страница канала должна поддерживать тёмную тему")
+@allure.severity(Severity.NORMAL)
 async def test_dark_mode_on_channel_page(page: Page):
     """Страница канала должна поддерживать тёмную тему."""
     channel = ChannelPage(page)

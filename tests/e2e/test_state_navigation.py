@@ -10,8 +10,10 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.channel_page import ChannelPage
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
@@ -20,6 +22,9 @@ from pages.schedule_page import SchedulePage
 @pytest.mark.e2e
 @pytest.mark.state_transition
 @pytest.mark.asyncio
+@allure.feature("переходов состояний")
+@allure.story("Навигация Главная → Расписание → Главная через браузер назад")
+@allure.severity(Severity.NORMAL)
 async def test_home_to_schedule_and_back(page: Page):
     """Навигация Главная → Расписание → Главная через браузер назад."""
     home = HomePage(page)
@@ -40,6 +45,9 @@ async def test_home_to_schedule_and_back(page: Page):
 @pytest.mark.e2e
 @pytest.mark.state_transition
 @pytest.mark.asyncio
+@allure.feature("переходов состояний")
+@allure.story("Навигация Главная → Канал → Главная")
+@allure.severity(Severity.NORMAL)
 async def test_home_to_channel_detail_and_back(page: Page):
     """Навигация Главная → Канал → Главная."""
     home = HomePage(page)
@@ -68,6 +76,9 @@ async def test_home_to_channel_detail_and_back(page: Page):
 @pytest.mark.e2e
 @pytest.mark.state_transition
 @pytest.mark.asyncio
+@allure.feature("переходов состояний")
+@allure.story("Навигация Расписание → Канал через ссылку канала")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_to_channel_detail(page: Page):
     """Навигация Расписание → Канал через ссылку канала."""
     schedule = SchedulePage(page)
@@ -89,6 +100,9 @@ async def test_schedule_to_channel_detail(page: Page):
 @pytest.mark.e2e
 @pytest.mark.state_transition
 @pytest.mark.asyncio
+@allure.feature("переходов состояний")
+@allure.story("Перезагрузка страницы расписания должна сохранять видимость каналов")
+@allure.severity(Severity.NORMAL)
 async def test_reload_preserves_state(page: Page):
     """Перезагрузка страницы расписания должна сохранять видимость каналов."""
     schedule = SchedulePage(page)

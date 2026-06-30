@@ -226,6 +226,82 @@ async def browser_manager(
         await manager.close()
 
 
+SEVERITY_MAP = {
+    "smoke": "CRITICAL",
+    "accessibility": "MINOR",
+    "error_handling": "NORMAL",
+    "state_transition": "NORMAL",
+    "performance": "NORMAL",
+    "visual": "MINOR",
+    "responsive": "NORMAL",
+    "dark_mode": "NORMAL",
+    "cookie": "NORMAL",
+    "seo": "NORMAL",
+    "footer": "NORMAL",
+    "load_more": "NORMAL",
+    "empty_state": "NORMAL",
+    "keyboard": "NORMAL",
+    "channel": "NORMAL",
+    "date_picker": "NORMAL",
+    "yandex": "NORMAL",
+}
+
+FEATURE_MAP = {
+    "test_home_page": "Главная страница",
+    "test_search_edge_cases": "Поиск",
+    "test_state_navigation": "Навигация",
+    "test_footer_links": "Футер",
+    "test_dark_mode": "Тёмная тема",
+    "test_cookie_consent": "Cookie-баннер",
+    "test_accessibility": "Доступность",
+    "test_error_pages": "Обработка ошибок",
+    "test_responsive": "Адаптивный дизайн",
+    "test_seo_meta": "SEO",
+    "test_schedule_navigation": "Расписание",
+    "test_channel_detail": "Страница канала",
+    "test_channel_filtering": "Фильтрация каналов",
+    "test_load_more": "Пагинация",
+    "test_empty_states": "Пустые состояния",
+    "test_keyboard_navigation": "Клавиатурная навигация",
+    "test_date_picker": "Выбор даты",
+    "test_visual_regression": "Визуальная регрессия",
+    "test_mobile_home": "Мобильная версия",
+    "test_mobile_navigation": "Мобильная навигация",
+}
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Dynamically add Allure metadata based on file name and markers."""
+    for item in items:
+        if not item.nodeid.startswith("tests/e2e/"):
+            continue
+
+        # Feature from file name
+        module_name = item.module.__name__.split(".")[-1]
+        feature = FEATURE_MAP.get(module_name, "E2E Тесты")
+        item.add_marker(pytest.mark.allure_test(feature))
+
+        # Story from test docstring or name
+        story = item.obj.__doc__ or item.name.replace("test_", "").replace("_", " ")
+        story = story.strip().split("\n")[0][:80]
+
+        # Severity from markers
+        severity = "NORMAL"
+        for marker in item.iter_markers():
+            if marker.name in SEVERITY_MAP:
+                severity = SEVERITY_MAP[marker.name]
+                break
+
+        # Apply via dynamic Allure API if available
+        try:
+            import allure
+            allure.dynamic.feature(feature)
+            allure.dynamic.story(story)
+            allure.dynamic.severity(getattr(allure.severity_level, severity))
+        except Exception:
+            pass
+
+
 @pytest.fixture(autouse=True)
 def _env_setup() -> None:
     """Ensure required directories exist before each test."""

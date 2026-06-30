@@ -16,6 +16,8 @@ import pytest
 from playwright.async_api import Page, expect
 
 from pages.home_page import HomePage
+import allure
+from allure_commons.types import Severity
 
 
 @pytest.mark.mobile
@@ -23,6 +25,9 @@ from pages.home_page import HomePage
 class TestMobileHomePage:
     """Критические сценарии на мобильном viewport (390×844)."""
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Главная страница корректно загружается на мобильном устройстве")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_home_loads(self, mobile_page: Page) -> None:
         """Главная страница корректно загружается на мобильном устройстве."""
         home = HomePage(mobile_page)
@@ -30,6 +35,9 @@ class TestMobileHomePage:
         await home.expect_channels_loaded()
         assert await home.is_footer_visible()
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Header содержит логотип, кнопку поиска и бургер-меню на mobile")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_header_elements(self, mobile_page: Page) -> None:
         """Header содержит логотип, кнопку поиска и бургер-меню на mobile."""
         home = HomePage(mobile_page)
@@ -51,6 +59,9 @@ class TestMobileHomePage:
         menu_btn = mobile_page.locator("button[aria-label='Открыть меню']")
         await expect(menu_btn).to_be_visible(timeout=10000)
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Поисковый overlay: открытие, ввод, результаты, закрытие")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_search_overlay(self, mobile_page: Page) -> None:
         """Поисковый overlay: открытие, ввод, результаты, закрытие."""
         home = HomePage(mobile_page)
@@ -78,6 +89,9 @@ class TestMobileHomePage:
         # Закрыть overlay
         await home.close_mobile_search()
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Бургер-меню: открытие меняет aria-label кнопки на 'Закрыть меню'")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_burger_menu(self, mobile_page: Page) -> None:
         """Бургер-меню: открытие меняет aria-label кнопки на 'Закрыть меню'."""
         home = HomePage(mobile_page)
@@ -95,6 +109,9 @@ class TestMobileHomePage:
         open_btn = mobile_page.locator("button[aria-label='Открыть меню']")
         await expect(open_btn).to_be_visible()
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Категории каналов отображаются на мобильном")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_categories(self, mobile_page: Page) -> None:
         """Категории каналов отображаются на мобильном."""
         home = HomePage(mobile_page)
@@ -106,6 +123,9 @@ class TestMobileHomePage:
         found = set(names)
         assert expected & found, f"Категории не найдены: ожидались {expected}, получено {found}"
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Карточки каналов видны на мобильном в вертикальном списке")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_channel_cards_visible(self, mobile_page: Page) -> None:
         """Карточки каналов видны на мобильном в вертикальном списке."""
         home = HomePage(mobile_page)
@@ -117,6 +137,9 @@ class TestMobileHomePage:
         for ch in channels[:3]:
             assert ch["name"], f"Канал без названия: {ch}"
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Клик по карточке канала переходит на страницу канала")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_click_channel(self, mobile_page: Page) -> None:
         """Клик по карточке канала переходит на страницу канала."""
         home = HomePage(mobile_page)
@@ -132,6 +155,9 @@ class TestMobileHomePage:
         h1 = mobile_page.locator("h1")
         await expect(h1).to_be_visible(timeout=15000)
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Cookie-баннер с кнопкой 'Принять куки' отображается на mobile")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_cookie_banner(self, mobile_page: Page) -> None:
         """Cookie-баннер с кнопкой 'Принять куки' отображается на mobile."""
         home = HomePage(mobile_page)
@@ -141,6 +167,9 @@ class TestMobileHomePage:
         cookie_btn = mobile_page.locator("button[aria-label='Принять куки']")
         await expect(cookie_btn).to_be_visible()
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Кнопка 'Загрузить еще...' подгружает дополнительные каналы")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_load_more(self, mobile_page: Page) -> None:
         """Кнопка 'Загрузить еще...' подгружает дополнительные каналы."""
         home = HomePage(mobile_page)
@@ -157,6 +186,9 @@ class TestMobileHomePage:
         else:
             pytest.skip("Кнопка 'Загрузить еще' не найдена на странице")
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Футер содержит валидные ссылки на мобильном (включая внешние)")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_footer_links(self, mobile_page: Page) -> None:
         """Футер содержит валидные ссылки на мобильном (включая внешние)."""
         home = HomePage(mobile_page)
@@ -169,6 +201,9 @@ class TestMobileHomePage:
             # Допускаем внешние ссылки (appmetrica, t.me) и внутренние
             assert href.startswith("/") or "http" in href or "russia-tv.online" in href
 
+@allure.feature("E2E тесты главной страницы на мобильном устройстве (iPhone 14 Pro)")
+@allure.story("Скролл до футера работает корректно на мобильном")
+@allure.severity(Severity.NORMAL)
     async def test_mobile_scroll_to_footer(self, mobile_page: Page) -> None:
         """Скролл до футера работает корректно на мобильном."""
         home = HomePage(mobile_page)

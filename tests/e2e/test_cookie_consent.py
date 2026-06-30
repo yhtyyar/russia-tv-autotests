@@ -8,8 +8,10 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.channel_page import ChannelPage
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
@@ -17,6 +19,9 @@ from pages.schedule_page import SchedulePage
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("cookie-баннера")
+@allure.story("Баннер cookie-согласия должен быть виден при первом визите на главную")
+@allure.severity(Severity.NORMAL)
 async def test_cookie_banner_visible_on_first_visit(page: Page):
     """Баннер cookie-согласия должен быть виден при первом визите на главную."""
     home = HomePage(page)
@@ -31,6 +36,9 @@ async def test_cookie_banner_visible_on_first_visit(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("cookie-баннера")
+@allure.story("Клик по принятию должен скрывать cookie-баннер")
+@allure.severity(Severity.NORMAL)
 async def test_cookie_accept_dismisses_banner(page: Page):
     """Клик по принятию должен скрывать cookie-баннер."""
     home = HomePage(page)
@@ -49,6 +57,9 @@ async def test_cookie_accept_dismisses_banner(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("cookie-баннера")
+@allure.story("Cookie-баннер должен появляться на странице расписания, если ещё не принят")
+@allure.severity(Severity.NORMAL)
 async def test_cookie_banner_on_schedule_page(page: Page):
     """Cookie-баннер должен появляться на странице расписания, если ещё не принят."""
     schedule = SchedulePage(page)
@@ -63,6 +74,9 @@ async def test_cookie_banner_on_schedule_page(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("cookie-баннера")
+@allure.story("Cookie-баннер должен появляться на странице канала")
+@allure.severity(Severity.NORMAL)
 async def test_cookie_banner_on_channel_page(page: Page):
     """Cookie-баннер должен появляться на странице канала."""
     channel = ChannelPage(page)

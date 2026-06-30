@@ -9,14 +9,19 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 
 
 @pytest.mark.e2e
 @pytest.mark.error_handling
 @pytest.mark.asyncio
+@allure.feature("обработки ошибок")
+@allure.story("Несуществующий путь должен возвращать 404 или fallback-страницу")
+@allure.severity(Severity.NORMAL)
 async def test_404_page_shows_content(page: Page):
     """Несуществующий путь должен возвращать 404 или fallback-страницу."""
     response = await page.goto("https://russia-tv.online/nonexistent-page-12345")
@@ -32,6 +37,9 @@ async def test_404_page_shows_content(page: Page):
 @pytest.mark.e2e
 @pytest.mark.error_handling
 @pytest.mark.asyncio
+@allure.feature("обработки ошибок")
+@allure.story("Невалидные query-параметры не должны падать сайт")
+@allure.severity(Severity.NORMAL)
 async def test_invalid_url_parameter(page: Page):
     """Невалидные query-параметры не должны падать сайт."""
     response = await page.goto("https://russia-tv.online/?region=invalid_region_999")
@@ -48,6 +56,9 @@ async def test_invalid_url_parameter(page: Page):
 @pytest.mark.error_handling
 @pytest.mark.flaky
 @pytest.mark.asyncio
+@allure.feature("обработки ошибок")
+@allure.story("Симулировать офлайн и проверить graceful fallback")
+@allure.severity(Severity.NORMAL)
 async def test_offline_fallback(page: Page):
     """Симулировать офлайн и проверить graceful fallback."""
     await page.context.set_offline(True)
@@ -64,6 +75,9 @@ async def test_offline_fallback(page: Page):
 @pytest.mark.e2e
 @pytest.mark.error_handling
 @pytest.mark.asyncio
+@allure.feature("обработки ошибок")
+@allure.story("Страница должна eventually загружаться даже на медленном 3G")
+@allure.severity(Severity.NORMAL)
 async def test_slow_network_loads(page: Page):
     """Страница должна eventually загружаться даже на медленном 3G."""
     cdp_session = await page.context.new_cdp_session(page)

@@ -7,8 +7,10 @@
 from pathlib import Path
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 from utils.image_diff import compare_images
 
@@ -40,6 +42,9 @@ async def page_mobile(page: Page):
 @pytest.mark.e2e
 @pytest.mark.visual
 @pytest.mark.asyncio
+@allure.feature("визуальной регрессии с помощью скриншотов Playwright")
+@allure.story("Сделать и сравнить скриншот главной страницы на десктопе")
+@allure.severity(Severity.MINOR)
 async def test_home_page_desktop_baseline(
     page: Page, request: pytest.FixtureRequest
 ):
@@ -72,6 +77,9 @@ async def test_home_page_desktop_baseline(
 @pytest.mark.e2e
 @pytest.mark.visual
 @pytest.mark.asyncio
+@allure.feature("визуальной регрессии с помощью скриншотов Playwright")
+@allure.story("Сделать и сравнить скриншот главной страницы на мобильном")
+@allure.severity(Severity.MINOR)
 async def test_home_page_mobile_baseline(
     page_mobile: Page, request: pytest.FixtureRequest
 ):

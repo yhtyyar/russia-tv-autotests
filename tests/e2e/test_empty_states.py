@@ -7,8 +7,10 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.channel_page import ChannelPage
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
@@ -16,6 +18,9 @@ from pages.schedule_page import SchedulePage
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("пустых состояний и сценариев «нет результатов»")
+@allure.story("Поиск по бессмысленному запросу должен показывать пустое состояние или остава...")
+@allure.severity(Severity.NORMAL)
 async def test_search_no_results_shows_empty_state(page: Page):
     """Поиск по бессмысленному запросу должен показывать пустое состояние или оставаться на странице."""
     home = HomePage(page)
@@ -38,6 +43,9 @@ async def test_search_no_results_shows_empty_state(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("пустых состояний и сценариев «нет результатов»")
+@allure.story("Переход на несуществующую категорию не должен падать")
+@allure.severity(Severity.NORMAL)
 async def test_invalid_category_url_loads_without_crash(page: Page):
     """Переход на несуществующую категорию не должен падать."""
     response = await page.goto("https://russia-tv.online/category/nonexistent-xyz")
@@ -52,6 +60,9 @@ async def test_invalid_category_url_loads_without_crash(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("пустых состояний и сценариев «нет результатов»")
+@allure.story("Страница расписания должна загружаться даже без доступных передач")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_page_empty_state_not_crashing(page: Page):
     """Страница расписания должна загружаться даже без доступных передач."""
     schedule = SchedulePage(page)
@@ -67,6 +78,9 @@ async def test_schedule_page_empty_state_not_crashing(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("пустых состояний и сценариев «нет результатов»")
+@allure.story("Страница канала должна загружаться даже с пустым списком передач")
+@allure.severity(Severity.NORMAL)
 async def test_channel_page_empty_programs_not_crashing(page: Page):
     """Страница канала должна загружаться даже с пустым списком передач."""
     channel = ChannelPage(page)

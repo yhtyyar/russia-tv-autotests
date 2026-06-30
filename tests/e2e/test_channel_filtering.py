@@ -1,13 +1,18 @@
 """E2E-тесты фильтрации каналов по категориям."""
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("фильтрации каналов по категориям")
+@allure.story("Выбор категории должен показывать отфильтрованные каналы")
+@allure.severity(Severity.NORMAL)
 async def test_filter_by_category_shows_results(page: Page):
     """Выбор категории должен показывать отфильтрованные каналы."""
     home = HomePage(page)
@@ -29,6 +34,9 @@ async def test_filter_by_category_shows_results(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("фильтрации каналов по категориям")
+@allure.story("Все кнопки категорий должны быть кликабельными")
+@allure.severity(Severity.NORMAL)
 async def test_category_filter_clickable(page: Page):
     """Все кнопки категорий должны быть кликабельными."""
     home = HomePage(page)

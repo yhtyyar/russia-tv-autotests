@@ -9,8 +9,10 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.channel_page import ChannelPage
 from pages.home_page import HomePage
 from pages.schedule_page import SchedulePage
@@ -18,6 +20,9 @@ from pages.schedule_page import SchedulePage
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("SEO meta-тегов и заголовков страниц")
+@allure.story("Главная страница должна иметь непустой title")
+@allure.severity(Severity.NORMAL)
 async def test_home_page_has_title(page: Page):
     """Главная страница должна иметь непустой title."""
     home = HomePage(page)
@@ -30,6 +35,9 @@ async def test_home_page_has_title(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("SEO meta-тегов и заголовков страниц")
+@allure.story("Главная страница должна иметь meta description")
+@allure.severity(Severity.NORMAL)
 async def test_home_page_has_meta_description(page: Page):
     """Главная страница должна иметь meta description."""
     home = HomePage(page)
@@ -44,6 +52,9 @@ async def test_home_page_has_meta_description(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("SEO meta-тегов и заголовков страниц")
+@allure.story("Страница расписания должна иметь title")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_page_has_title(page: Page):
     """Страница расписания должна иметь title."""
     schedule = SchedulePage(page)
@@ -56,6 +67,9 @@ async def test_schedule_page_has_title(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("SEO meta-тегов и заголовков страниц")
+@allure.story("Страница канала должна иметь title с информацией о канале")
+@allure.severity(Severity.NORMAL)
 async def test_channel_page_has_title(page: Page):
     """Страница канала должна иметь title с информацией о канале."""
     channel = ChannelPage(page)
@@ -69,6 +83,9 @@ async def test_channel_page_has_title(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("SEO meta-тегов и заголовков страниц")
+@allure.story("Главная страница должна иметь canonical link")
+@allure.severity(Severity.NORMAL)
 async def test_home_page_has_canonical_link(page: Page):
     """Главная страница должна иметь canonical link."""
     home = HomePage(page)

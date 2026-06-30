@@ -1,12 +1,17 @@
 """E2E-тесты главной страницы russia-tv.online."""
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.home_page import HomePage
 from utils.screenshot_utils import capture_full_page
 
 
+@allure.feature("Главная страница")
+@allure.story("Загрузка страницы")
+@allure.severity(Severity.CRITICAL)
 @pytest.mark.e2e
 @pytest.mark.smoke
 @pytest.mark.asyncio
@@ -23,6 +28,9 @@ async def test_home_page_loads_successfully(page: Page):
     assert len(categories) > 0, "No category filters found"
 
 
+@allure.feature("Главная страница")
+@allure.story("Контент каналов")
+@allure.severity(Severity.NORMAL)
 @pytest.mark.e2e
 @pytest.mark.asyncio
 async def test_home_page_has_channel_names(page: Page):

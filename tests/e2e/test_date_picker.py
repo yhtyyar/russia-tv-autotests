@@ -8,14 +8,19 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page
 
+import allure
 from pages.schedule_page import SchedulePage
 from utils.date_helpers import format_schedule_date
 
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("выбора даты на странице расписания")
+@allure.story("Страница расписания должна иметь элемент выбора даты")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_date_picker_exists(page: Page):
     """Страница расписания должна иметь элемент выбора даты."""
     schedule = SchedulePage(page)
@@ -30,6 +35,9 @@ async def test_schedule_date_picker_exists(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("выбора даты на странице расписания")
+@allure.story("Выбор сегодняшней даты должен сохранять или перезагружать расписание")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_select_today(page: Page):
     """Выбор сегодняшней даты должен сохранять или перезагружать расписание."""
     schedule = SchedulePage(page)
@@ -52,6 +60,9 @@ async def test_schedule_select_today(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("выбора даты на странице расписания")
+@allure.story("Выбор вчерашней даты должен показывать расписание")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_select_yesterday(page: Page):
     """Выбор вчерашней даты должен показывать расписание."""
     schedule = SchedulePage(page)
@@ -73,6 +84,9 @@ async def test_schedule_select_yesterday(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("выбора даты на странице расписания")
+@allure.story("Выбор завтрашней даты должен показывать расписание")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_select_tomorrow(page: Page):
     """Выбор завтрашней даты должен показывать расписание."""
     schedule = SchedulePage(page)
@@ -94,6 +108,9 @@ async def test_schedule_select_tomorrow(page: Page):
 
 @pytest.mark.e2e
 @pytest.mark.asyncio
+@allure.feature("выбора даты на странице расписания")
+@allure.story("После выбора даты элементы передач должны быть видны или показано пустое сост...")
+@allure.severity(Severity.NORMAL)
 async def test_schedule_programs_visible_after_date_change(page: Page):
     """После выбора даты элементы передач должны быть видны или показано пустое состояние."""
     schedule = SchedulePage(page)
