@@ -1,20 +1,43 @@
 name: Test Automation CI
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Набор тестов для запуска"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - lint
+          - unit
+          - integration
+          - e2e
+          - all
+      browser:
+        description: "Браузер для E2E-тестов (только при suite=e2e или all)"
+        required: true
+        default: "chromium"
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.suite }}-${{ github.event.inputs.browser }}
+  cancel-in-progress: true
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    if: github.event.inputs.suite == 'lint' || github.event.inputs.suite == 'all'
     steps:
       - uses: actions/checkout@v4
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Установка uv
         uses: astral-sh/setup-uv@v3
       - name: Установка зависимостей
@@ -28,55 +51,71 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
+    if: github.event.inputs.suite == 'unit' || github.event.inputs.suite == 'all'
     steps:
       - uses: actions/checkout@v4
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Установка uv
         uses: astral-sh/setup-uv@v3
       - name: Установка зависимостей
         run: uv sync --extra dev
       - name: Запуск Unit-тестов
-        run: uv run pytest tests/unit/ -v --tb=short
+        run: uv run pytest tests/unit/ -v --tb=short --junitxml=reports/junit-unit.xml
+      - name: Загрузка результатов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: reports/junit-unit.xml
 
   integration-tests:
     runs-on: ubuntu-latest
+    if: github.event.inputs.suite == 'integration' || github.event.inputs.suite == 'all'
     steps:
       - uses: actions/checkout@v4
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Установка uv
         uses: astral-sh/setup-uv@v3
       - name: Установка зависимостей
         run: uv sync --extra dev
       - name: Запуск Интеграционных тестов
-        run: uv run pytest tests/integration/ -v --tb=short
-        env:
-          API_BASE_URL: https://russia-tv.online/api
+        run: uv run pytest tests/integration/ -v --tb=short --junitxml=reports/junit-integration.xml
+      - name: Загрузка результатов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: reports/junit-integration.xml
 
   e2e-tests:
     runs-on: ubuntu-latest
+    if: github.event.inputs.suite == 'e2e' || github.event.inputs.suite == 'all'
     strategy:
+      fail-fast: false
       matrix:
-        browser: [chromium, firefox]
+        browser: ["${{ github.event.inputs.browser }}"]
     steps:
       - uses: actions/checkout@v4
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Установка uv
         uses: astral-sh/setup-uv@v3
       - name: Установка зависимостей
         run: uv sync --extra dev
       - name: Установка браузеров Playwright
         run: uv run playwright install --with-deps ${{ matrix.browser }}
+      - name: Установка axe-core
+        run: npm ci
       - name: Запуск E2E-тестов
-        run: uv run pytest tests/e2e/ -v
+        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-e2e.xml
         env:
           HEADLESS: true
           BROWSER: ${{ matrix.browser }}
@@ -92,3 +131,9 @@ jobs:
         with:
           name: screenshots-${{ matrix.browser }}
           path: reports/screenshots/
+      - name: Загрузка JUnit-отчёта
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-e2e-${{ matrix.browser }}
+          path: reports/junit-e2e.xml

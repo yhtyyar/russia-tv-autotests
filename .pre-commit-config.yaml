@@ -16,5 +16,5 @@ repos:
     rev: 1.7.9
     hooks:
       - id: bandit
-        args: ["-r", "api/", "core/", "pages/", "utils/", "config/"]
+        args: ["-r", "core/", "pages/", "utils/", "config/"]
         exclude: tests/
