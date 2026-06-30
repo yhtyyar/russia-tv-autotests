@@ -41,6 +41,7 @@ dev = [
     "types-python-dateutil",
     "types-pyyaml",
     "pytest-cov>=5.0",
+    "git-cliff>=2.0",
 ]
 
 [tool.ruff]

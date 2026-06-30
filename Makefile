@@ -1,4 +1,4 @@
-.PHONY: install test lint format pre-commit coverage clean e2e integration unit smoke visual regression regression-flaky error state perf a11y dark cookie seo footer load-more empty keyboard channel date-picker e2e-trace allure allure-html
+.PHONY: install test lint format pre-commit changelog coverage clean e2e integration unit smoke visual regression regression-flaky error state perf a11y dark cookie seo footer load-more empty keyboard channel date-picker e2e-trace allure allure-html
 
 install:
 	uv sync --extra dev
@@ -15,6 +15,10 @@ format:
 
 pre-commit:
 	uv run pre-commit run --all-files
+
+# Сгенерировать CHANGELOG из Conventional Commits
+changelog:
+	uv run git-cliff --output CHANGELOG.md
 
 # Быстрые smoke-тесты (< 2 мин)
 smoke:
