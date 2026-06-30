@@ -319,6 +319,18 @@ make allure
 | `reports/screenshots/` | Скриншоты, сделанные во время выполнения |
 | `reports/traces/` | Playwright-трейсы упавших тестов (при `--tracing`) |
 
+### Allure на GitHub Pages
+
+После каждого запуска CI Allure Report автоматически публикуется на GitHub Pages:
+
+**`https://yhtyyar.github.io/russia-tv-autotests/allure/`**
+
+Отчёт содержит:
+- Тренды по всем прогонам (история сохраняется между запусками)
+- Категории дефектов ( flaky, broken, failed)
+- Скриншоты и трейсы прикреплены к упавшим тестам
+- Распределение по severity, tags, suites
+
 ### Playwright Tracing
 
 Для отладки упавших E2E-тестов записываются полные Playwright-трейсы:
@@ -364,6 +376,16 @@ CI/CD настроен **исключительно для ручного зап
 - `screenshots-mobile.zip` — скриншоты mobile-тестов
 - `allure-results-<browser>.zip` — сырые данные для Allure
 - `junit-*.xml` — JUnit-compatible отчёты для интеграции с dashboards
+
+### Allure Report на GitHub Pages
+
+После каждого завершения CI (даже при частичных падениях) запускается job `allure-report`, который:
+1. Собирает `allure-results` из всех job (unit, integration, e2e, mobile)
+2. Подгружает историю предыдущих прогонов из ветки `gh-pages`
+3. Генерирует полный HTML-отчёт с трендами
+4. Публикует в папку `/allure/` на GitHub Pages (`keep_files: true` — существующий сайт не затрагивается)
+
+**Прямая ссылка:** `https://yhtyyar.github.io/russia-tv-autotests/allure/`
 
 ---
 
