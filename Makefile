@@ -1,4 +1,4 @@
-.PHONY: install test lint format pre-commit changelog coverage clean e2e integration unit smoke visual regression regression-flaky error state perf a11y dark cookie seo footer load-more empty keyboard channel date-picker e2e-trace allure allure-html
+.PHONY: install test lint format pre-commit changelog coverage clean e2e integration unit smoke visual regression regression-flaky error state perf a11y dark cookie seo footer load-more empty keyboard channel date-picker e2e-trace allure allure-html mobile yandex
 
 install:
 	uv sync --extra dev
@@ -110,6 +110,14 @@ test:
 # E2E с Playwright tracing для упавших тестов
 e2e-trace:
 	uv run pytest tests/e2e/ -v --tracing
+
+# Mobile E2E-тесты (iPhone 14 Pro viewport)
+mobile:
+	uv run pytest tests/e2e/ -v -m mobile
+
+# E2E в Яндекс Браузере (локально, требуется установленный Yandex Browser)
+yandex:
+	BROWSER=yandex uv run pytest tests/e2e/ -v -m "not mobile"
 
 coverage:
 	uv run pytest --cov=. --cov-report=html --cov-report=term tests/unit/ tests/integration/

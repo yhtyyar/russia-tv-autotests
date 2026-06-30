@@ -51,6 +51,8 @@
 | **Линтинг** | Ruff, MyPy (strict), Bandit |
 | **Мягкие проверки** | pytest-check |
 | **Доступность** | axe-core (локальный, npm) |
+| **Mobile** | Playwright device emulation (iPhone 14 Pro) |
+| **Региональный браузер** | Яндекс Браузер (Chromium-based, автоопределение пути) |
 | **CI/CD** | GitHub Actions (только ручной запуск) |
 
 ---
@@ -95,8 +97,9 @@ russia-tv-tests/
 | **Unit** | 2 | 18 | < 1 s | Чистая логика | — |
 | **Integration** | 2 | 7 | ~10 s | Доступность сайта, performance budget | Граничные значения |
 | **E2E** | 15 | 55+ | ~120 s | Браузерная автоматизация, UX, SEO, a11y | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
+| **Mobile** | 1 | 5 | ~30 s | Мобильный viewport, touch, адаптивность | Попарное тестирование |
 
-**Итого**: 80+ тестов, покрывающих только внешние пользовательские сценарии.
+**Итого**: 85+ тестов, покрывающих только внешние пользовательские сценарии.
 
 ---
 
@@ -132,6 +135,8 @@ russia-tv-tests/
 | `@pytest.mark.footer` | Тесты ссылок в футере |
 | `@pytest.mark.load_more` | Тесты пагинации / «Показать ещё» |
 | `@pytest.mark.empty_state` | Тесты пустых состояний |
+| `@pytest.mark.mobile` | Мобильный viewport (iPhone 14 Pro, 390×844) |
+| `@pytest.mark.yandex` | Тесты специфичные для Яндекс Браузера |
 
 ---
 
@@ -149,6 +154,11 @@ make install
 uv sync --extra dev
 uv run playwright install
 npm ci                # локальный axe-core для accessibility-тестов
+
+# (Опционально) Установить Яндекс Браузер для E2E-тестов в нём:
+# Linux:  sudo snap install yandex-browser
+# macOS:  brew install --cask yandex
+# Windows: choco install yandex-browser
 
 # Создать файл окружения
 cp .env.example .env
@@ -227,6 +237,12 @@ make date-picker
 # E2E с Playwright tracing для упавших тестов
 make e2e-trace
 
+# Mobile E2E-тесты (iPhone 14 Pro viewport, touch-events)
+make mobile
+
+# E2E в Яндекс Браузере (требуется установленный Yandex Browser)
+make yandex
+
 # Быстрая проверка перед коммитом (unit + integration)
 make test
 
@@ -248,6 +264,12 @@ uv run pytest -m "smoke or unit" -v
 
 # Обновить базовые скриншоты визуальной регрессии
 uv run pytest tests/e2e/test_visual_regression.py -v --update-baselines
+
+# Mobile тесты
+uv run pytest tests/e2e/ -v -m mobile
+
+# E2E в Яндекс Браузере
+BROWSER=yandex uv run pytest tests/e2e/ -v -m "not mobile"
 ```
 
 ---
@@ -330,7 +352,8 @@ CI/CD настроен **исключительно для ручного зап
    - `lint` — Ruff + MyPy + Bandit
    - `unit` — Быстрый фидбек
    - `integration` — Валидация доступности сайта
-   - `e2e` — Браузерная автоматизация (Chromium / Firefox / WebKit)
+   - `e2e` — Браузерная автоматизация (Chromium / Firefox / WebKit / **Яндекс**)
+   - `mobile` — Мобильные тесты (iPhone 14 Pro viewport)
    - `all` — Всё последовательно
 
 ### Артефакты CI
@@ -338,6 +361,7 @@ CI/CD настроен **исключительно для ручного зап
 При падении автоматически загружаются:
 
 - `screenshots-<browser>.zip` — скриншоты упавших тестов
+- `screenshots-mobile.zip` — скриншоты mobile-тестов
 - `allure-results-<browser>.zip` — сырые данные для Allure
 - `junit-*.xml` — JUnit-compatible отчёты для интеграции с dashboards
 

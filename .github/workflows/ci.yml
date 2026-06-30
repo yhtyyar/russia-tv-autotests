@@ -13,6 +13,7 @@ on:
           - unit
           - integration
           - e2e
+          - mobile
           - all
       browser:
         description: "Браузер для E2E-тестов (только при suite=e2e или all)"
@@ -23,6 +24,7 @@ on:
           - chromium
           - firefox
           - webkit
+          - yandex
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.suite }}-${{ github.event.inputs.browser }}
@@ -110,12 +112,22 @@ jobs:
         uses: astral-sh/setup-uv@v3
       - name: Установка зависимостей
         run: uv sync --extra dev
+      - name: Установка Яндекс Браузера
+        if: matrix.browser == 'yandex'
+        run: |
+          wget -q https://repo.yandex.ru/yandex-browser/deb/pool/main/y/yandex-browser-stable/yandex-browser-stable_24.7.1.171-1_amd64.deb || true
+          sudo dpkg -i yandex-browser-stable_*.deb || sudo apt-get install -f -y || true
       - name: Установка браузеров Playwright
-        run: uv run playwright install --with-deps ${{ matrix.browser }}
+        run: |
+          if [ "${{ matrix.browser }}" = "yandex" ]; then
+            uv run playwright install --with-deps chromium
+          else
+            uv run playwright install --with-deps ${{ matrix.browser }}
+          fi
       - name: Установка axe-core
         run: npm ci
       - name: Запуск E2E-тестов
-        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-e2e.xml
+        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-e2e.xml -m "not mobile"
         env:
           HEADLESS: true
           BROWSER: ${{ matrix.browser }}
@@ -137,3 +149,44 @@ jobs:
         with:
           name: junit-e2e-${{ matrix.browser }}
           path: reports/junit-e2e.xml
+
+  mobile-tests:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.suite == 'mobile' || github.event.inputs.suite == 'all'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Установка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Установка uv
+        uses: astral-sh/setup-uv@v3
+      - name: Установка зависимостей
+        run: uv sync --extra dev
+      - name: Установка браузеров Playwright
+        run: uv run playwright install --with-deps chromium
+      - name: Установка axe-core
+        run: npm ci
+      - name: Запуск Mobile E2E-тестов
+        run: uv run pytest tests/e2e/ -v --tb=short --junitxml=reports/junit-mobile.xml -m mobile
+        env:
+          HEADLESS: true
+          BROWSER: chromium
+      - name: Загрузка результатов Allure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-mobile
+          path: reports/allure-results/
+      - name: Загрузка скриншотов
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-mobile
+          path: reports/screenshots/
+      - name: Загрузка JUnit-отчёта
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-mobile
+          path: reports/junit-mobile.xml

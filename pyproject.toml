@@ -93,6 +93,8 @@ markers = [
     "footer: Footer link tests",
     "load_more: Pagination and load more tests",
     "empty_state: Empty state tests",
+    "mobile: Mobile viewport tests (iPhone 14 Pro)",
+    "yandex: Yandex Browser specific tests",
 ]
 
 [tool.bandit]
