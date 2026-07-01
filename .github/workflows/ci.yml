@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.suite == 'lint' || github.event.inputs.suite == 'all'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.suite == 'unit' || github.event.inputs.suite == 'all'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.suite == 'integration' || github.event.inputs.suite == 'all'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
@@ -118,7 +118,7 @@ jobs:
       matrix:
         browser: ["${{ github.event.inputs.browser }}"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
@@ -190,7 +190,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.suite == 'mobile' || github.event.inputs.suite == 'all'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Установка Python
         uses: actions/setup-python@v5
         with:
@@ -245,7 +245,7 @@ jobs:
     needs: [unit-tests, integration-tests, e2e-tests, mobile-tests]
     if: always()
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
