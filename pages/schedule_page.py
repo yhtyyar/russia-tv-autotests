@@ -1,5 +1,9 @@
 """Page Object страницы расписания russia-tv.online."""
 
+import contextlib
+
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
+
 from core.base_page import BasePage
 
 
@@ -10,25 +14,44 @@ class SchedulePage(BasePage):
     def path(self) -> str:
         return "/epg"
 
-    _CHANNEL_LINKS = "a[href*='region=']"
-    _DATE_SELECTOR = "input[type='date'], .date-selector"
+    CHANNEL_LINKS = "a[href*='region=']"
+    DATE_SELECTOR = "input[type='date'], .date-selector"
     _PROGRAM_ITEMS = ".program-item, [data-testid='program-item']"
     _PROGRAM_TIMES = ".program-time, [data-testid='program-time']"
     _EMPTY_SCHEDULE = ".empty-schedule, .no-programs, [data-testid='empty-schedule']"
-    _DARK_MODE_TOGGLE = "button[aria-label*='темн'], button[aria-label*='dark'], [data-testid='dark-mode-toggle'], .theme-toggle"
-    _FOOTER = "footer"
-    _COOKIE_BANNER = "[data-testid='cookie-banner'], .cookie-banner, #cookie-consent"
-    _COOKIE_ACCEPT = "[data-testid='cookie-accept'], .cookie-accept, #cookie-consent button"
 
     async def select_date(self, date_str: str) -> None:
-        """Выбрать дату из календаря, если он присутствует.
+        """Выбрать дату в date picker, если он присутствует на странице.
+
+        Поддерживает нативный ``<input type="date">`` (приоритетно) и
+        кастомный виджет на основе ``<select>`` внутри ``.date-selector``.
 
         Args:
-            date_str: Строка даты в формате YYYY-MM-DD.
+            date_str: Дата в формате YYYY-MM-DD.
+
+        Raises:
+            NotImplementedError: если на странице нет ни нативного
+                input[type=date], ни поддерживаемого кастомного виджета.
+                Проверено вручную на живом сайте (2026-07-01, /epg и
+                страница канала) — date picker сейчас отсутствует вовсе.
         """
-        selector = f"{self._DATE_SELECTOR} select"
-        if await self.is_element_visible(selector):
-            await self.page.select_option(selector, date_str)
+        date_input = self.page.locator("input[type='date']")
+        if await date_input.count() > 0 and await date_input.first.is_visible():
+            await date_input.first.fill(date_str)
+            # SPA может не достигать networkidle из-за фоновых запросов
+            with contextlib.suppress(PlaywrightTimeoutError):
+                await self.page.wait_for_load_state("networkidle", timeout=5000)
+            return
+
+        select = self.page.locator(".date-selector select")
+        if await select.count() > 0 and await select.first.is_visible():
+            await select.first.select_option(date_str)
+            return
+
+        raise NotImplementedError(
+            "Date picker не найден на странице расписания — виджет выбора "
+            "даты отсутствует на текущей версии сайта (см. CLAUDE.md)"
+        )
 
     async def get_channel_links(self) -> list[dict[str, str]]:
         """Получить список ссылок каналов на странице расписания.
@@ -36,7 +59,7 @@ class SchedulePage(BasePage):
         Returns:
             Список словарей с данными каналов.
         """
-        items = await self.page.query_selector_all(self._CHANNEL_LINKS)
+        items = await self.page.query_selector_all(self.CHANNEL_LINKS)
         channels = []
         for item in items:
             text = await item.inner_text() or ""
@@ -59,10 +82,12 @@ class SchedulePage(BasePage):
             title = await title_el.text_content() if title_el else ""
             time_el = await item.query_selector(self._PROGRAM_TIMES)
             time_str = await time_el.text_content() if time_el else ""
-            programs.append({
-                "title": (title or "").strip(),
-                "time": (time_str or "").strip(),
-            })
+            programs.append(
+                {
+                    "title": (title or "").strip(),
+                    "time": (time_str or "").strip(),
+                }
+            )
         return programs
 
     async def is_empty_schedule_visible(self) -> bool:
@@ -73,56 +98,15 @@ class SchedulePage(BasePage):
         """
         return await self.is_element_visible(self._EMPTY_SCHEDULE)
 
-    async def toggle_dark_mode(self) -> None:
-        """Клик по переключателю тёмной темы."""
-        await self.click(self._DARK_MODE_TOGGLE)
-
-    async def is_dark_mode_active(self) -> bool:
-        """Проверить, активна ли тёмная тема.
-
-        Returns:
-            True, если html или body имеют dark-класс/атрибут.
-        """
-        return bool(
-            await self.page.evaluate(
-                "() => document.documentElement.classList.contains('dark') || "
-                "document.body.classList.contains('dark') || "
-                "document.documentElement.getAttribute('data-theme') === 'dark'"
-            )
-        )
-
-    async def get_meta_tags(self) -> dict[str, str]:
-        """Извлечь SEO meta-теги из head страницы.
-
-        Returns:
-            Словарь с title, description, og:title, og:description, og:image.
-        """
-        result = await self.page.evaluate("""() => {
-            const getMeta = (name) => {
-                const el = document.querySelector(`meta[name="${name}"], meta[property="${name}"]`);
-                return el ? el.content : "";
-            };
-            return {
-                title: document.title,
-                description: getMeta("description"),
-                og_title: getMeta("og:title"),
-                og_description: getMeta("og:description"),
-                og_image: getMeta("og:image"),
-                canonical: document.querySelector('link[rel="canonical"]')?.href || ""
-            };
-        }
-        """)
-        return dict(result)
-
     async def get_available_dates(self) -> list[str]:
-        """Получить список доступных вариантов дат.
+        """Получить список доступных дат из кастомного date picker.
 
         Returns:
-            Список значений опций дат.
+            Список значений опций дат. Пустой список, если используется
+            нативный input[type=date] (у него нет фиксированного набора
+            вариантов) или date picker отсутствует на странице.
         """
-        options = await self.page.query_selector_all(
-            "input[type='date'], .date-selector option",
-        )
+        options = await self.page.query_selector_all(".date-selector option")
         dates = []
         for opt in options:
             value = await opt.get_attribute("value")

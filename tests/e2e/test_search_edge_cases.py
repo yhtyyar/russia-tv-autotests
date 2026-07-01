@@ -18,8 +18,7 @@ from test_data.factories import SearchQueryFactory
 _DATA_PATH = Path(__file__).parent.parent.parent / "test_data" / "search_queries.json"
 _search_cases = json.loads(_DATA_PATH.read_text(encoding="utf-8"))["cases"]
 _search_params = [
-    pytest.param(c["query"], c["should_have_results"], id=c["id"])
-    for c in _search_cases
+    pytest.param(c["query"], c["should_have_results"], id=c["id"]) for c in _search_cases
 ]
 
 # Random valid queries from factory for exploratory testing
@@ -27,9 +26,7 @@ _random_valid_queries = SearchQueryFactory.build_batch(
     3, category="валидный", should_have_results=True
 )
 for q in _random_valid_queries:
-    _search_params.append(
-        pytest.param(q["query"], q["should_have_results"], id=f"faker_{q['id']}")
-    )
+    _search_params.append(pytest.param(q["query"], q["should_have_results"], id=f"faker_{q['id']}"))
 
 
 @pytest.mark.e2e
@@ -38,9 +35,7 @@ for q in _random_valid_queries:
 @allure.feature("Поиск")
 @allure.story("Эквивалентное разбиение + граничные значения")
 @allure.severity(Severity.NORMAL)
-async def test_search_equivalence_partitioning(
-    page: Page, query: str, should_have_results: bool
-):
+async def test_search_equivalence_partitioning(page: Page, query: str, should_have_results: bool):
     """Поиск с различными разбиениями входных данных."""
     home = HomePage(page)
     await home.goto()
@@ -50,10 +45,10 @@ async def test_search_equivalence_partitioning(
         pytest.skip("Search input not visible")
 
     await home.search(query)
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_timeout(1000)  # debounce клиентской фильтрации по вводу
 
-    current_url = page.url
-    if not should_have_results:
-        assert "search" not in current_url or home.url in current_url
+    empty_visible = await home.is_empty_state_visible()
+    if should_have_results:
+        assert not empty_visible, f"Запрос '{query}' неожиданно показал пустой результат"
     else:
-        assert home.url in current_url or "search" in current_url
+        assert empty_visible, f"Запрос '{query}' должен показывать пустой результат поиска"

@@ -10,7 +10,9 @@ repos:
     rev: v1.10.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-python-dateutil]
+        additional_dependencies:
+          [types-python-dateutil, types-pyyaml, pydantic, pydantic-settings, playwright]
+        exclude: ^(tests|test_data)/
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.9

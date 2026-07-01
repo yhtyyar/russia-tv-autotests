@@ -1,4 +1,4 @@
-.PHONY: install test lint format pre-commit changelog coverage clean e2e integration unit smoke visual regression regression-flaky error state perf a11y dark cookie seo footer load-more empty keyboard channel date-picker e2e-trace allure allure-html mobile yandex
+.PHONY: install test lint format pre-commit changelog coverage clean e2e integration unit smoke visual regression regression-flaky error state perf a11y cookie seo footer load-more empty keyboard channel date-picker e2e-trace allure allure-html mobile yandex
 
 install:
 	uv sync --extra dev
@@ -58,10 +58,6 @@ perf:
 # Accessibility (WCAG) тесты
 a11y:
 	uv run pytest tests/e2e/test_accessibility.py -v
-
-# Тесты тёмной темы
-dark:
-	uv run pytest tests/e2e/test_dark_mode.py -v
 
 # Тесты cookie-баннера
 cookie:

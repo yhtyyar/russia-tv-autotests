@@ -43,7 +43,6 @@ dev = [
     "pytest-cov>=5.0",
     "git-cliff>=2.0",
     "factory-boy>=3.3",
-    "faker>=25.0",
 ]
 
 [tool.ruff]
@@ -52,7 +51,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM", "TID", "TCH", "RUF"]
-ignore = ["E501", "N999", "RUF001"]
+ignore = ["E501", "N999", "RUF001", "RUF002", "RUF003"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -63,7 +62,11 @@ strict = true
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
-exclude = ["tests/"]
+exclude = ["tests/", "test_data/"]
+
+[[tool.mypy.overrides]]
+module = ["conftest"]
+ignore_errors = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -89,7 +92,6 @@ markers = [
     "state_transition: Navigation state machine tests",
     "performance: Performance budget tests",
     "accessibility: WCAG / a11y tests",
-    "dark_mode: Theme toggle tests",
     "cookie: Cookie consent tests",
     "seo: Meta tags and SEO tests",
     "footer: Footer link tests",
@@ -97,6 +99,7 @@ markers = [
     "empty_state: Empty state tests",
     "mobile: Mobile viewport tests (iPhone 14 Pro)",
     "yandex: Yandex Browser specific tests",
+    "chaos: Chaos engineering and resilience tests",
 ]
 
 [tool.bandit]

@@ -8,9 +8,9 @@ Reads reports/performance/history.json, writes perf/index.html.
 """
 
 import json
-import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 HISTORY_PATH = Path("reports/performance/history.json")
 OUTPUT_PATH = Path("perf/index.html")
@@ -92,7 +92,7 @@ def _fmt(v: float, key: str) -> str:
     return f"{v:.0f} ms"
 
 
-def build_cards(latest: dict) -> str:
+def build_cards(latest: dict[str, dict[str, float]]) -> str:
     cards = []
     for page, metrics in latest.items():
         rows = ""
@@ -108,13 +108,11 @@ def build_cards(latest: dict) -> str:
                 f'<span><span class="val">{_fmt(val, key)}</span>'
                 f'<span class="status {st}"></span></span></div>'
             )
-        cards.append(
-            f'<div class="card"><h2>🌐 {page}</h2>{rows}</div>'
-        )
+        cards.append(f'<div class="card"><h2>🌐 {page}</h2>{rows}</div>')
     return "\n".join(cards)
 
 
-def build_history_table(history: list) -> str:
+def build_history_table(history: list[dict[str, Any]]) -> str:
     if not history:
         return "<p>Нет данных</p>"
     rows = ""
@@ -122,17 +120,15 @@ def build_history_table(history: list) -> str:
         ts = run["timestamp"][:19].replace("T", " ")
         pages = run.get("pages", {})
         for page, metrics in pages.items():
-            vals = " ".join(
-                f"{k}={_fmt(v, k)}" for k, v in metrics.items() if k in BUDGETS
-            )
+            vals = " ".join(f"{k}={_fmt(v, k)}" for k, v in metrics.items() if k in BUDGETS)
             rows += f"<tr><td>{ts}</td><td>{page}</td><td>{vals}</td></tr>"
     return (
-        f'<table><thead><tr><th>Дата</th><th>Страница</th>'
-        f'<th>Метрики</th></tr></thead><tbody>{rows}</tbody></table>'
+        f"<table><thead><tr><th>Дата</th><th>Страница</th>"
+        f"<th>Метрики</th></tr></thead><tbody>{rows}</tbody></table>"
     )
 
 
-def build_charts(history: list) -> str:
+def build_charts(history: list[dict[str, Any]]) -> str:
     if len(history) < 2:
         return "<p>Недостаточно данных для графиков (нужно ≥2 прогона)</p>"
     # Simple sparklines as SVG polylines
@@ -141,7 +137,7 @@ def build_charts(history: list) -> str:
         data = []
         labels = []
         for run in history:
-            for page, metrics in run.get("pages", {}).items():
+            for _page, metrics in run.get("pages", {}).items():
                 v = metrics.get(metric)
                 if v is not None:
                     data.append(v)
@@ -168,7 +164,7 @@ def build_charts(history: list) -> str:
 
 
 def main() -> None:
-    history: list = []
+    history: list[dict[str, Any]] = []
     if HISTORY_PATH.exists():
         history = json.loads(HISTORY_PATH.read_text(encoding="utf-8"))
 
@@ -179,7 +175,7 @@ def main() -> None:
     charts = build_charts(history)
 
     html = HTML_TEMPLATE.format(
-        updated=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        updated=datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
         cards=cards,
         history_table=table,
         charts=charts,

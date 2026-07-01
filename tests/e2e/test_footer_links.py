@@ -81,10 +81,8 @@ async def test_schedule_page_footer_visible(page: Page):
 
     # Footer might be below fold, scroll to bottom
     await page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
-    await page.wait_for_selector(schedule._FOOTER, state="visible", timeout=5000)
-
-    visible = await schedule.is_element_visible(schedule._FOOTER)
-    assert visible, "Footer is not visible on schedule page"
+    await page.wait_for_selector(schedule.FOOTER, state="visible", timeout=5000)
+    assert await schedule.is_footer_visible(), "Footer is not visible on schedule page"
 
 
 @pytest.mark.e2e
@@ -95,15 +93,13 @@ async def test_schedule_page_footer_visible(page: Page):
 async def test_channel_page_footer_visible(page: Page):
     """Футер должен быть виден на странице канала."""
     channel = ChannelPage(page)
-    await channel.open_channel("1")
+    await channel.open_channel("1kanal")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_selector(
+        "h1[data-test='current-channel-name'], h1", state="visible", timeout=15000
+    )
 
     # Scroll to bottom to reveal footer
     await page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
-    await page.wait_for_selector(channel._FOOTER, state="visible", timeout=5000)
-
-    visible = await channel.is_footer_visible()
-    if not visible:
-        pytest.skip("Footer not implemented on channel page")
-    assert visible, "Footer is not visible on channel page"
+    await page.wait_for_selector(channel.FOOTER, state="visible", timeout=5000)
+    assert await channel.is_footer_visible(), "Footer is not visible on channel page"

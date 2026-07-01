@@ -33,15 +33,13 @@ class HomePage(BasePage):
     _NAV_LINKS = "nav a, header a"
     _SEARCH_INPUT = "input[placeholder*='название телеканала']"
     _SEARCH_INPUT_ALT = "input[type='search']"
-    _LOAD_MORE = "button:has-text('Показать еще'), .load-more"
-    _DARK_MODE_TOGGLE = "button[aria-label*='темн'], button[aria-label*='dark'], [data-testid='dark-mode-toggle'], .theme-toggle"
-    _COOKIE_BANNER = "[data-testid='cookie-banner'], .cookie-banner, #cookie-consent"
-    _COOKIE_ACCEPT = "[data-testid='cookie-accept'], .cookie-accept, #cookie-consent button"
-    _FOOTER = "footer"
+    LOAD_MORE = "button:has-text('Загрузить еще')"
     _FOOTER_LINKS = "footer a"
-    _CATEGORY_BUTTONS = ".category-btn, [data-testid='category-btn'], nav a"
-    _CATEGORY_ITEMS = "header ~ * li, .categories li, [class*='category'] li, main li"
-    _EMPTY_STATE = ".empty-state, [data-testid='empty-state'], .no-results"
+    # Проверено на живом сайте: жанровые категории — это <li data-test="category-button">
+    # внутри горизонтального списка (Популярное, Все, Эфирные, Фильмы, Детям, Музыка, ...).
+    _CATEGORY_BUTTONS = "li[data-test='category-button']"
+    _CATEGORY_ITEMS = "li[data-test='category-button']"
+    EMPTY_STATE = "[data-test='channel-search-empty']"
     _MOBILE_SEARCH_BUTTON = "button[aria-label='Поиск по каналам']"
     _MOBILE_SEARCH_OVERLAY = "div.fixed.inset-x-0, [class*='search-overlay']"
     _MOBILE_SEARCH_CLOSE = "button[aria-label='Закрыть меню'], button[aria-label='Закрыть'], [class*='search-overlay'] button:first-child"
@@ -79,20 +77,20 @@ class HomePage(BasePage):
         return channels
 
     async def get_categories(self) -> list[str]:
-        """Получить список названий категорий.
+        """Получить список названий жанровых категорий со страницы.
 
         Returns:
-            Список текстовых меток категорий.
+            Список текстовых меток категорий (например, ['Популярное', 'Все', 'Спорт', ...]).
         """
-        return ["Все каналы", "Телепрограмма"]
+        return await self.get_category_names()
 
     async def select_category(self, name: str) -> None:
-        """Клик по кнопке фильтра категории.
+        """Клик по кнопке жанровой категории для фильтрации каналов.
 
         Args:
-            name: Название категории для выбора.
+            name: Название категории для выбора (например, 'Спорт').
         """
-        await self.page.click(f"a:has-text('{name}')")
+        await self.page.locator(self._CATEGORY_BUTTONS, has_text=name).first.click()
 
     async def _get_search_locator(self) -> SelfHealingLocator:
         """Вернуть self-healing локатор для поискового поля."""
@@ -128,46 +126,8 @@ class HomePage(BasePage):
 
     async def click_load_more(self) -> None:
         """Клик по кнопке «Показать ещё», если она есть."""
-        if await self.is_element_visible(self._LOAD_MORE):
-            await self.click(self._LOAD_MORE)
-
-    async def is_dark_mode_toggle_visible(self) -> bool:
-        """Проверить, виден ли переключатель тёмной темы.
-
-        Returns:
-            True, если кнопка переключения видна.
-        """
-        return await self.is_element_visible(self._DARK_MODE_TOGGLE)
-
-    async def toggle_dark_mode(self) -> None:
-        """Клик по переключателю тёмной темы."""
-        await self.click(self._DARK_MODE_TOGGLE)
-
-    async def is_dark_mode_active(self) -> bool:
-        """Проверить, активна ли тёмная тема.
-
-        Returns:
-            True, если html или body имеют dark-класс/атрибут.
-        """
-        return bool(
-            await self.page.evaluate(
-                "() => document.documentElement.classList.contains('dark') || "
-                "document.body.classList.contains('dark') || "
-                "document.documentElement.getAttribute('data-theme') === 'dark'"
-            )
-        )
-
-    async def is_cookie_banner_visible(self) -> bool:
-        """Проверить, виден ли баннер cookie-согласия.
-
-        Returns:
-            True, если баннер присутствует и виден.
-        """
-        return await self.is_element_visible(self._COOKIE_BANNER)
-
-    async def accept_cookies(self) -> None:
-        """Клик по кнопке принятия cookie."""
-        await self.click(self._COOKIE_ACCEPT)
+        if await self.is_element_visible(self.LOAD_MORE):
+            await self.click(self.LOAD_MORE)
 
     async def get_footer_links(self) -> list[FooterLinkInfo]:
         """Получить все ссылки футера с текстом и href.
@@ -182,14 +142,6 @@ class HomePage(BasePage):
             href = await link.get_attribute("href") or ""
             result.append({"text": text.strip(), "href": href})
         return result
-
-    async def is_footer_visible(self) -> bool:
-        """Проверить, виден ли футер.
-
-        Returns:
-            True, если футер виден.
-        """
-        return await self.is_element_visible(self._FOOTER)
 
     async def get_visible_categories(self) -> list[str]:
         """Получить список видимых кнопок категорий из DOM.
@@ -226,7 +178,6 @@ class HomePage(BasePage):
         btn = await self.page.query_selector(self._MOBILE_SEARCH_BUTTON)
         if btn and await btn.is_visible():
             await btn.tap()
-            await self.page.wait_for_timeout(1000)
             # Ждём появления input в overlay
             await self.page.wait_for_selector(
                 "input[aria-label='Поиск по каналам']",
@@ -243,7 +194,9 @@ class HomePage(BasePage):
             await close_btn.tap()
         else:
             await self.page.keyboard.press("Escape")
-        await self.page.wait_for_timeout(500)
+        await self.page.wait_for_selector(
+            "input[aria-label='Поиск по каналам']", state="hidden", timeout=5000
+        )
 
     async def is_mobile_search_overlay_visible(self) -> bool:
         """Проверить, открыт ли поисковый overlay на мобильном.
@@ -261,7 +214,9 @@ class HomePage(BasePage):
         btn = await self.page.query_selector(self._BURGER_MENU_BUTTON)
         if btn and await btn.is_visible():
             await btn.tap()
-            await self.page.wait_for_timeout(1500)
+            await self.page.wait_for_selector(
+                self._BURGER_MENU_CLOSE, state="visible", timeout=5000
+            )
         else:
             raise RuntimeError("Бургер-меню не найдено или не видно")
 
@@ -272,7 +227,7 @@ class HomePage(BasePage):
             await close_btn.tap()
         else:
             await self.page.keyboard.press("Escape")
-        await self.page.wait_for_timeout(500)
+        await self.page.wait_for_selector(self._BURGER_MENU_CLOSE, state="hidden", timeout=5000)
 
     async def is_burger_menu_open(self) -> bool:
         """Проверить, открыто ли бургер-меню.
@@ -308,8 +263,8 @@ class HomePage(BasePage):
         if await first.is_visible():
             # На touch-устройствах используем tap вместо click
             await first.tap()
-            # Навигация в SPA происходит асинхронно — даём время на смену URL
-            await self.page.wait_for_timeout(2000)
+            # Навигация в SPA происходит асинхронно — ждём смены URL на канал
+            await self.page.wait_for_url("**region=**", timeout=10000)
         else:
             raise RuntimeError("Первая карточка канала не видна")
 
@@ -319,7 +274,7 @@ class HomePage(BasePage):
         Returns:
             True, если элемент пустого состояния виден.
         """
-        return await self.is_element_visible(self._EMPTY_STATE)
+        return await self.is_element_visible(self.EMPTY_STATE)
 
     async def get_search_input_selector(self) -> str:
         """Вернуть первый видимый селектор поля поиска.
@@ -334,26 +289,3 @@ class HomePage(BasePage):
                 if visible:
                     return selector
         return self._SEARCH_INPUT
-
-    async def get_meta_tags(self) -> dict[str, str]:
-        """Извлечь SEO meta-теги из head страницы.
-
-        Returns:
-            Словарь с title, description, og:title, og:description, og:image.
-        """
-        result = await self.page.evaluate("""() => {
-            const getMeta = (name) => {
-                const el = document.querySelector(`meta[name="${name}"], meta[property="${name}"]`);
-                return el ? el.content : "";
-            };
-            return {
-                title: document.title,
-                description: getMeta("description"),
-                og_title: getMeta("og:title"),
-                og_description: getMeta("og:description"),
-                og_image: getMeta("og:image"),
-                canonical: document.querySelector('link[rel="canonical"]')?.href || ""
-            };
-        }
-        """)
-        return dict(result)

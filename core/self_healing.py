@@ -78,7 +78,7 @@ class RoleFallback:
         }
         for pattern, role in role_map.items():
             if pattern in selector:
-                loc = page.get_by_role(role)
+                loc = page.get_by_role(role)  # type: ignore[arg-type]
                 if await loc.count() > 0:
                     return loc.first
         return None
@@ -87,11 +87,11 @@ class RoleFallback:
 class SelfHealingLocator:
     """Locator with automatic fallback strategies."""
 
-    DEFAULT_STRATEGIES: list[FallbackStrategy] = [
+    DEFAULT_STRATEGIES: tuple[FallbackStrategy, ...] = (
         CssPartialMatchFallback(),
         TextContentFallback(),
         RoleFallback(),
-    ]
+    )
 
     def __init__(
         self,
@@ -123,7 +123,7 @@ class SelfHealingLocator:
                 logger.info("Healed with fallback selector: %s", fb)
                 return loc
             except Exception:
-                continue
+                pass  # nosec: B110 — fallback selector strategy, try next
 
         # Try dynamic strategies
         for strategy in self.strategies:

@@ -18,6 +18,11 @@ class BasePage(ABC):
     Предоставляет общие методы взаимодействия и работу с URL.
     """
 
+    # Общие для всех страниц элементы (проверено на живом сайте, 2026-07-01).
+    COOKIE_BANNER = "[data-test='cookie-description']"
+    COOKIE_ACCEPT = "button[data-test='cookie-agree-button']"
+    FOOTER = "footer"
+
     def __init__(self, page: Page) -> None:
         """Инициализация page object.
 
@@ -118,6 +123,49 @@ class BasePage(ABC):
             return ""
         text = await element.text_content()
         return text or ""
+
+    async def is_cookie_banner_visible(self) -> bool:
+        """Проверить, виден ли баннер cookie-согласия.
+
+        Returns:
+            True, если баннер присутствует и виден.
+        """
+        return await self.is_element_visible(self.COOKIE_BANNER)
+
+    async def accept_cookies(self) -> None:
+        """Клик по кнопке принятия cookie."""
+        await self.click(self.COOKIE_ACCEPT)
+
+    async def is_footer_visible(self) -> bool:
+        """Проверить, виден ли футер.
+
+        Returns:
+            True, если футер виден.
+        """
+        return await self.is_element_visible(self.FOOTER)
+
+    async def get_meta_tags(self) -> dict[str, str]:
+        """Извлечь SEO meta-теги из head страницы.
+
+        Returns:
+            Словарь с title, description, og:title, og:description, og:image, canonical.
+        """
+        result = await self.page.evaluate("""() => {
+            const getMeta = (name) => {
+                const el = document.querySelector(`meta[name="${name}"], meta[property="${name}"]`);
+                return el ? el.content : "";
+            };
+            return {
+                title: document.title,
+                description: getMeta("description"),
+                og_title: getMeta("og:title"),
+                og_description: getMeta("og:description"),
+                og_image: getMeta("og:image"),
+                canonical: document.querySelector('link[rel="canonical"]')?.href || ""
+            };
+        }
+        """)
+        return dict(result)
 
     async def take_screenshot(self, name: str) -> str:
         """Сделать скриншот и сохранить в директорию reports.

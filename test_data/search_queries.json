@@ -1,14 +1,14 @@
 {
   "_description": "Эквивалентное разбиение + граничные значения + предугадывание ошибок для поиска",
   "cases": [
-    {"query": "", "should_have_results": false, "id": "empty_query", "category": "граничное_значение", "reason": "Пустая строка — нижняя граница"},
+    {"query": "", "should_have_results": true, "id": "empty_query", "category": "граничное_значение", "reason": "Пустая строка не фильтрует список — отображаются все каналы (проверено на живом сайте 2026-07-01)"},
     {"query": "а", "should_have_results": true, "id": "single_cyrillic_char", "category": "граничное_значение", "reason": "Один символ — минимальный валидный ввод"},
     {"query": "Первый", "should_have_results": true, "id": "normal_cyrillic", "category": "валидный", "reason": "Типичный запрос 3-30 символов"},
     {"query": "Мир", "should_have_results": true, "id": "common_word", "category": "валидный", "reason": "Распространённое слово"},
     {"query": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "should_have_results": false, "id": "very_long_200_chars", "category": "граничное_значение", "reason": "Максимальная длина"},
     {"query": "<script>alert(1)</script>", "should_have_results": false, "id": "xss_payload", "category": "безопасность", "reason": "XSS попытка"},
     {"query": "'; DROP TABLE channels; --", "should_have_results": false, "id": "sql_injection", "category": "безопасность", "reason": "SQL инъекция"},
-    {"query": "!@#$%^&*()", "should_have_results": false, "id": "special_chars_only", "category": "граничное_значение", "reason": "Только спецсимволы"},
+    {"query": "!@#$%^&*()", "should_have_results": true, "id": "special_chars_only", "category": "граничное_значение", "reason": "Спецсимволы не активируют клиентский фильтр — список остаётся полным (проверено на живом сайте 2026-07-01)"},
     {"query": "Новости", "should_have_results": true, "id": "unicode_cyrillic", "category": "валидный", "reason": "Unicode кириллица"}
   ]
 }

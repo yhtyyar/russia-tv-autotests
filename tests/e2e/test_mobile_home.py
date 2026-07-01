@@ -13,11 +13,11 @@
 """
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page, expect
 
-from pages.home_page import HomePage
 import allure
-from allure_commons.types import Severity
+from pages.home_page import HomePage
 
 
 @pytest.mark.mobile
@@ -43,8 +43,6 @@ class TestMobileHomePage:
         home = HomePage(mobile_page)
         await home.goto()
         await home.expect_channels_loaded()
-        # Даём время на полную инициализацию JS (Nuxt загружает кнопки динамически)
-        await mobile_page.wait_for_timeout(3000)
 
         header = mobile_page.locator("header")
         await expect(header).to_be_visible()
@@ -73,9 +71,7 @@ class TestMobileHomePage:
         assert await home.is_mobile_search_overlay_visible()
 
         # Ввести запрос в overlay-поле
-        search_input = mobile_page.locator(
-            "input[aria-label='Поиск по каналам']"
-        )
+        search_input = mobile_page.locator("input[aria-label='Поиск по каналам']")
         await expect(search_input).to_be_visible()
         await search_input.fill("Первый")
         await mobile_page.keyboard.press("Enter")
@@ -180,7 +176,11 @@ class TestMobileHomePage:
         if await load_more.count() > 0 and await load_more.is_visible():
             initial = len(await home.get_visible_channels())
             await load_more.click()
-            await mobile_page.wait_for_timeout(2000)
+            await mobile_page.wait_for_function(
+                "count => document.querySelectorAll(\"a[href*='region=']\").length > count",
+                arg=initial,
+                timeout=10000,
+            )
             current = len(await home.get_visible_channels())
             assert current > initial, "Количество каналов не увеличилось после 'Загрузить еще'"
         else:

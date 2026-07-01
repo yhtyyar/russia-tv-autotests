@@ -1,11 +1,11 @@
 """E2E тесты навигации на мобильном устройстве (iPhone 14 Pro)."""
 
 import pytest
+from allure_commons.types import Severity
 from playwright.async_api import Page, expect
 
-from pages.home_page import HomePage
 import allure
-from allure_commons.types import Severity
+from pages.home_page import HomePage
 
 
 @pytest.mark.mobile
@@ -32,9 +32,9 @@ class TestMobileNavigation:
         title = await h1.text_content()
         assert title and len(title.strip()) > 0
 
-        # Программа канала (список передач)
-        programs = mobile_page.locator("main").locator("div, li").first
-        await expect(programs).to_be_visible(timeout=15000)
+        # Программа канала (текущая передача)
+        current_program = mobile_page.locator("[data-test='current-channel-program-title']")
+        await expect(current_program).to_be_visible(timeout=15000)
 
     @allure.feature("Мобильная навигация")
     @allure.story("Возврат с страницы канала на главную (кнопка назад / логотип)")
@@ -47,15 +47,12 @@ class TestMobileNavigation:
 
         first_card = mobile_page.locator("a[href*='region=']").first
         await first_card.tap()
-        await mobile_page.wait_for_timeout(2000)
-        assert "region=" in mobile_page.url
+        await mobile_page.wait_for_url("**region=**", timeout=10000)
 
         # Клик по логотипу для возврата
         logo = mobile_page.locator("header a[href='/']")
         await logo.click()
-        await mobile_page.wait_for_timeout(2000)
-
-        assert mobile_page.url.rstrip("/").endswith("russia-tv.online") or mobile_page.url == "https://russia-tv.online/"
+        await mobile_page.wait_for_url(home.url, timeout=10000)
         await home.expect_channels_loaded()
 
     @allure.feature("Мобильная навигация")
@@ -69,7 +66,6 @@ class TestMobileNavigation:
 
         # Скролл вниз
         await mobile_page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        await mobile_page.wait_for_timeout(500)
 
         scroll_top = mobile_page.locator("button[aria-label='Вверх']")
         if await scroll_top.count() > 0:

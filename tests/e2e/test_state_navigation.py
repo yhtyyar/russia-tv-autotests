@@ -59,17 +59,14 @@ async def test_home_to_channel_detail_and_back(page: Page):
         pytest.skip("No channel cards available")
 
     await cards[0].click()
-    await page.wait_for_load_state("networkidle")
-    # SPA navigation may not change URL; verify page content changed
-    current_url = page.url
-    # Accept either channel URL or home with hash/query if SPA uses client-side routing
-    assert current_url != home.url or home.url in current_url, (
-        "Expected navigation to channel detail page"
-    )
+    await page.wait_for_url("**region=**", timeout=15000)
+    assert (
+        "region=" in page.url and page.url != home.url
+    ), f"Ожидался переход на страницу канала (?region=...), получен URL: {page.url}"
 
     await page.go_back()
     await page.wait_for_load_state("domcontentloaded")
-    # Should return to home
+    # Должны вернуться на главную
     assert home.url in page.url
 
 
@@ -89,12 +86,15 @@ async def test_schedule_to_channel_detail(page: Page):
     if not links:
         pytest.skip("No channel links on schedule page")
 
-    # Open first channel via its link
-    channel_id = links[0].get("href", "").split("/")[-1] or "1"
+    # Извлечь slug из href вида "/1kanal?region=21" (реальная схема URL сайта)
+    href = links[0].get("href", "")
+    slug = href.split("?")[0].strip("/").split("/")[-1] or "1kanal"
     channel = ChannelPage(page)
-    await channel.open_channel(channel_id)
-    await page.wait_for_load_state("networkidle")
-    assert "/channel/" in page.url or "/epg" in page.url
+    await channel.open_channel(slug)
+    await page.wait_for_selector(
+        "h1[data-test='current-channel-name'], h1", state="visible", timeout=15000
+    )
+    assert "region=" in page.url, f"Ожидался переход на страницу канала, получен URL: {page.url}"
 
 
 @pytest.mark.e2e
@@ -111,6 +111,7 @@ async def test_reload_preserves_state(page: Page):
 
     await page.reload()
     await page.wait_for_load_state("domcontentloaded")
+    await page.wait_for_selector(schedule.CHANNEL_LINKS, state="visible", timeout=15000)
     links = await schedule.get_channel_links()
-    # After reload, should still show channels (SPA hydration)
-    assert links is not None
+    # После перезагрузки каналы должны отрисоваться заново (гидратация SPA)
+    assert len(links) > 0, "После перезагрузки страницы расписания список каналов пуст"

@@ -31,14 +31,10 @@ async def test_search_no_results_shows_empty_state(page: Page):
         pytest.skip("Search not visible")
 
     await home.search("xyznonexistent12345")
-    await page.wait_for_load_state("networkidle")
-
-    # Either empty state is shown, or page stays on home
-    empty_visible = await home.is_empty_state_visible()
-    current_url = page.url
-    assert empty_visible or "search" not in current_url or home.url in current_url, (
-        "Unexpected behavior for empty search results"
-    )
+    await page.wait_for_selector(home.EMPTY_STATE, state="visible", timeout=10000)
+    assert (
+        await home.is_empty_state_visible()
+    ), "Индикатор пустого результата поиска не отображается для несуществующего запроса"
 
 
 @pytest.mark.e2e
@@ -49,13 +45,12 @@ async def test_search_no_results_shows_empty_state(page: Page):
 async def test_invalid_category_url_loads_without_crash(page: Page):
     """Переход на несуществующую категорию не должен падать."""
     response = await page.goto("https://russia-tv.online/category/nonexistent-xyz")
-    if response:
-        assert response.status in (200, 404)
+    assert response is not None and response.status in (200, 404)
 
-    body = await page.query_selector("body")
-    assert body is not None
-    text = await body.inner_text() or ""
-    assert len(text) > 0, "Page crashed with no content"
+    text = await page.locator("body").inner_text()
+    assert (
+        "не найдена" in text.lower() or "404" in text
+    ), f"Ожидалась страница 404 для несуществующей категории, получено: {text[:200]!r}"
 
 
 @pytest.mark.e2e
@@ -69,11 +64,13 @@ async def test_schedule_page_empty_state_not_crashing(page: Page):
     await schedule.goto()
     await schedule.wait_for_load("domcontentloaded")
 
-    # Page should be functional regardless of content
-    body = await page.query_selector("body")
-    assert body is not None
-    text = await body.inner_text() or ""
-    assert len(text) > 0, "Schedule page crashed"
+    programs = await schedule.get_programs()
+    empty_visible = await schedule.is_empty_schedule_visible()
+    channels = await schedule.get_channel_links()
+    assert programs or empty_visible or channels, (
+        "Страница расписания не показывает ни передачи, ни каналы, "
+        "ни индикатор пустого состояния"
+    )
 
 
 @pytest.mark.e2e
@@ -86,9 +83,8 @@ async def test_channel_page_empty_programs_not_crashing(page: Page):
     channel = ChannelPage(page)
     await channel.open_channel("999999")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_load_state("networkidle")
 
-    body = await page.query_selector("body")
-    assert body is not None
-    text = await body.inner_text() or ""
-    assert len(text) > 0, "Channel page crashed for unknown channel"
+    text = await page.locator("body").inner_text()
+    assert (
+        "не найдена" in text.lower() or "404" in text
+    ), f"Ожидалась страница 404 для несуществующего канала, получен текст: {text[:200]!r}"

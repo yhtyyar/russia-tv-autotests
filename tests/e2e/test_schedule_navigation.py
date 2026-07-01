@@ -21,7 +21,7 @@ async def test_schedule_page_loads(page: Page):
     await schedule.wait_for_load("domcontentloaded")
 
     # Wait for content to render (SPA hydration)
-    await page.wait_for_selector(schedule._CHANNEL_LINKS, state="visible", timeout=15000)
+    await page.wait_for_selector(schedule.CHANNEL_LINKS, state="visible", timeout=15000)
 
     channels = await schedule.get_channel_links()
     assert len(channels) > 0, "No channel links found"

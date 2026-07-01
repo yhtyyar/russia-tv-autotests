@@ -25,13 +25,14 @@ from pages.home_page import HomePage
 async def test_404_page_shows_content(page: Page):
     """Несуществующий путь должен возвращать 404 или fallback-страницу."""
     response = await page.goto("https://russia-tv.online/nonexistent-page-12345")
-    if response:
-        assert response.status in (200, 404)
-    # SPA should still render some layout (header/footer) even on 404
-    body = await page.query_selector("body")
-    assert body is not None
-    text = await body.inner_text() or ""
-    assert len(text) > 0
+    assert response is not None and response.status in (
+        200,
+        404,
+    ), f"Ожидался статус 200 или 404, получен: {response.status if response else None}"
+    text = await page.locator("body").inner_text()
+    assert (
+        "не найдена" in text.lower() or "404" in text
+    ), f"Ожидалось сообщение о том, что страница не найдена, получено: {text[:200]!r}"
 
 
 @pytest.mark.e2e
@@ -43,13 +44,13 @@ async def test_404_page_shows_content(page: Page):
 async def test_invalid_url_parameter(page: Page):
     """Невалидные query-параметры не должны падать сайт."""
     response = await page.goto("https://russia-tv.online/?region=invalid_region_999")
-    if response:
-        assert response.status == 200
-    # Page should still be functional
+    assert response is not None and response.status == 200
     home = HomePage(page)
+    await home.expect_channels_loaded(timeout=15000)
     channels = await home.get_visible_channels()
-    # Should show default channels or empty state, not crash
-    assert channels is not None
+    # Невалидный регион должен приводить к fallback на регион по умолчанию,
+    # а не к пустой странице.
+    assert len(channels) > 0, "Список каналов пуст при невалидном параметре region"
 
 
 @pytest.mark.e2e
@@ -60,16 +61,25 @@ async def test_invalid_url_parameter(page: Page):
 @allure.story("Симулировать офлайн и проверить graceful fallback")
 @allure.severity(Severity.NORMAL)
 async def test_offline_fallback(page: Page):
-    """Симулировать офлайн и проверить graceful fallback."""
+    """В офлайн-режиме навигация должна завершаться сетевой ошибкой, а не зависать.
+
+    Проверено вручную: у сайта нет service worker/precache для полностью
+    офлайн-режима, поэтому ожидаемое поведение браузера — явная ошибка
+    net::ERR_INTERNET_DISCONNECTED, а не бесконечное ожидание или краш.
+    """
     await page.context.set_offline(True)
     try:
-        await page.goto("https://russia-tv.online/")
-        # If we reach here without exception, offline simulation may not
-        # have triggered — still acceptable if page shows offline UI
-    except Exception:
-        pass  # Expected when offline
+        with pytest.raises(Exception, match="ERR_INTERNET_DISCONNECTED"):
+            await page.goto("https://russia-tv.online/", timeout=15000)
     finally:
         await page.context.set_offline(False)
+
+    # После возврата в онлайн сайт должен снова нормально загружаться
+    home = HomePage(page)
+    await home.goto()
+    await home.expect_channels_loaded(timeout=15000)
+    channels = await home.get_visible_channels()
+    assert len(channels) > 0, "Список каналов пуст после возврата из офлайн-режима"
 
 
 @pytest.mark.e2e

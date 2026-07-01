@@ -4,7 +4,6 @@
 """
 
 import os
-import warnings
 
 import pytest
 import pytest_check as check
@@ -56,9 +55,7 @@ async def test_home_page_accessibility(page: Page):
     critical = [v for v in violations if v.get("impact") == "critical"]
     serious = [v for v in violations if v.get("impact") == "serious"]
     check.equal(len(serious), 0, msg=f"Serious a11y violations: {len(serious)}")
-    assert len(critical) == 0, (
-        f"Critical a11y violations: {len(critical)} — {critical[0]['help']}"
-    )
+    assert len(critical) == 0, f"Critical a11y violations: {len(critical)} — {critical[0]['help']}"
 
 
 @pytest.mark.e2e
@@ -98,9 +95,7 @@ async def test_schedule_page_accessibility(page: Page):
     )
 
     critical = [v for v in violations if v.get("impact") == "critical"]
-    assert len(critical) == 0, (
-        f"Critical a11y violations on schedule: {len(critical)}"
-    )
+    assert len(critical) == 0, f"Critical a11y violations on schedule: {len(critical)}"
 
 
 @pytest.mark.e2e

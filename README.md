@@ -97,11 +97,11 @@ russia-tv-tests/
 | --------------- | ---------- | ---------- | ------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | **Smoke**       | 1          | 4          | ~30 s                    | Критические пути                            | —                                                                                                                              |
 | **Unit**        | 2          | 18         | < 1 s                    | Чистая логика                                  | —                                                                                                                              |
-| **Integration** | 2          | 7          | ~10 s                    | Доступность сайта, performance budget      | Граничные значения                                                                                             |
-| **E2E**         | 15         | 55+        | ~120 s                   | Браузерная автоматизация            | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
+| **Integration** | 2          | 8          | ~10 s                    | Доступность сайта, performance budget      | Граничные значения                                                                                             |
+| **E2E**         | 19         | 77         | ~120 s                   | Браузерная автоматизация, chaos-инжиниринг            | Эквивалентное разбиение, диаграмма состояний, предугадывание ошибок |
 | **Mobile**      | 2          | 14         | ~90 s                    | Мобильный viewport, touch, SPA навигация | Попарное тестирование                                                                                       |
 
-**Итого**: 85+ тестов.
+**Итого**: 121 тест.
 
 ---
 
@@ -132,7 +132,7 @@ russia-tv-tests/
 | `@pytest.mark.accessibility`    | WCAG / клавиатура                      |
 | `@pytest.mark.flaky`            | Нестабильные (retry)                 |
 | `@pytest.mark.slow`             | > 30 секунд                                |
-| `@pytest.mark.dark_mode`        | Тёмная тема                            |
+| `@pytest.mark.chaos`            | Chaos-инжиниринг (сбои сети/API)  |
 | `@pytest.mark.cookie`           | Cookie-баннер                              |
 | `@pytest.mark.seo`              | Meta-теги                                    |
 | `@pytest.mark.footer`           | Футер                                       |
@@ -175,7 +175,6 @@ make error          # Граничные случаи
 make state          # Навигационные потоки
 make perf           # Performance budget
 make a11y           # Accessibility
-make dark           # Тёмная тема
 make cookie         # Cookie-баннер
 make seo            # Meta-теги
 make footer         # Футер
@@ -202,7 +201,11 @@ uv run pytest -m "smoke or unit" -v
 uv run pytest tests/e2e/ -v -m mobile
 BROWSER=yandex uv run pytest tests/e2e/ -v -m "not mobile"
 uv run pytest tests/e2e/test_visual_regression.py -v --update-baselines
+uv run pytest -m chaos -v  # Chaos-инжиниринг (сбои сети/API)
 ```
+
+> Известные ограничения фичей сайта (dark mode, date picker и т.д.) описаны
+> в [CLAUDE.md](CLAUDE.md#известные-ограничения).
 
 ---
 

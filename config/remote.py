@@ -11,6 +11,7 @@ Environment variables:
 
 import os
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -25,7 +26,7 @@ class RemoteCapabilities:
     build_name: str = "russia-tv-autotests"
     project_name: str = "russia-tv.online"
 
-    def to_browserstack(self) -> dict:
+    def to_browserstack(self) -> dict[str, str]:
         """Generate BrowserStack capabilities."""
         return {
             "browserName": self.browser,
@@ -40,7 +41,7 @@ class RemoteCapabilities:
             "consoleLogs": "errors",
         }
 
-    def to_sauce(self) -> dict:
+    def to_sauce(self) -> dict[str, Any]:
         """Generate Sauce Labs capabilities."""
         return {
             "browserName": self.browser,

@@ -25,14 +25,14 @@ from pages.home_page import HomePage
 async def test_channel_page_loads_and_shows_name(page: Page):
     """Страница канала должна загружаться и отображать название канала."""
     channel = ChannelPage(page)
-    await channel.open_channel("1")
+    await channel.open_channel("1kanal")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_selector(
+        "h1[data-test='current-channel-name'], h1", state="visible", timeout=15000
+    )
 
     name = await channel.get_channel_name()
-    if not name:
-        pytest.skip("Channel name selector not matched on this site structure")
-    assert name, "Channel name is empty on detail page"
+    assert name, "Название канала не отображается на странице канала"
 
 
 @pytest.mark.e2e
@@ -43,16 +43,20 @@ async def test_channel_page_loads_and_shows_name(page: Page):
 async def test_channel_page_has_programs_or_empty_state(page: Page):
     """Страница канала должна показывать передачи или пустое состояние, не падать."""
     channel = ChannelPage(page)
-    await channel.open_channel("1")
+    await channel.open_channel("1kanal")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_selector(
+        "h1[data-test='current-channel-name'], h1", state="visible", timeout=15000
+    )
 
-    await channel.get_programs()
-    # Either programs exist or page is functional
-    body = await page.query_selector("body")
-    assert body is not None
-    text = await body.inner_text() or ""
-    assert len(text) > 0, "Channel page is empty"
+    programs = await channel.get_programs()
+    empty_visible = (
+        await page.locator(".empty-schedule, .no-programs, [data-testid='empty-schedule']").count()
+        > 0
+    )
+    assert (
+        len(programs) > 0 or empty_visible
+    ), "На странице канала нет ни списка передач, ни индикатора пустого расписания"
 
 
 @pytest.mark.e2e
@@ -63,14 +67,15 @@ async def test_channel_page_has_programs_or_empty_state(page: Page):
 async def test_channel_page_current_program_indicator(page: Page):
     """Страница канала может показывать индикатор текущей передачи."""
     channel = ChannelPage(page)
-    await channel.open_channel("1")
+    await channel.open_channel("1kanal")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_selector(
+        "h1[data-test='current-channel-name'], h1", state="visible", timeout=15000
+    )
 
-    visible = await channel.is_current_program_visible()
-    if not visible:
-        pytest.skip("Индикатор текущей передачи не найден на данной странице")
-    assert visible
+    assert (
+        await channel.is_current_program_visible()
+    ), "Индикатор текущей передачи не отображается на странице канала"
 
 
 @pytest.mark.e2e
@@ -82,7 +87,7 @@ async def test_channel_page_current_program_indicator(page: Page):
 async def test_channel_to_home_navigation(page: Page):
     """Пользователь может перейти со страницы канала обратно на главную."""
     channel = ChannelPage(page)
-    await channel.open_channel("1")
+    await channel.open_channel("1kanal")
     await channel.wait_for_load("domcontentloaded")
 
     home = HomePage(page)
@@ -100,9 +105,11 @@ async def test_channel_to_home_navigation(page: Page):
 async def test_channel_page_meta_tags(page: Page):
     """Страница канала должна иметь title и meta-теги."""
     channel = ChannelPage(page)
-    await channel.open_channel("1")
+    await channel.open_channel("1kanal")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_selector(
+        "h1[data-test='current-channel-name'], h1", state="visible", timeout=15000
+    )
 
     meta = await channel.get_meta_tags()
     assert meta["title"], "Channel page title is empty"

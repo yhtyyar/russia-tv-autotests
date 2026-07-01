@@ -87,11 +87,11 @@ async def test_enter_key_activates_search(page: Page):
     await page.focus(selector)
     await page.keyboard.type("Первый")
     await page.keyboard.press("Enter")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_timeout(1000)  # debounce клиентской фильтрации по вводу
 
-    # After submit, URL may change or page stays with results
-    current_url = page.url
-    assert "search" in current_url or home.url in current_url
+    assert (
+        not await home.is_empty_state_visible()
+    ), "Поиск по Enter не дал результатов для запроса 'Первый'"
 
 
 @pytest.mark.e2e

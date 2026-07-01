@@ -73,9 +73,11 @@ async def test_schedule_page_has_title(page: Page):
 async def test_channel_page_has_title(page: Page):
     """Страница канала должна иметь title с информацией о канале."""
     channel = ChannelPage(page)
-    await channel.open_channel("1")
+    await channel.open_channel("1kanal")
     await channel.wait_for_load("domcontentloaded")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_selector(
+        "h1[data-test='current-channel-name'], h1", state="visible", timeout=15000
+    )
 
     meta = await channel.get_meta_tags()
     assert meta["title"], "Channel page title is empty"

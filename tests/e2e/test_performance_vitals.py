@@ -8,7 +8,7 @@
 """
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -27,7 +27,7 @@ def _save_vitals(page_name: str, vitals: dict) -> None:
     if _HISTORY_PATH.exists():
         history = json.loads(_HISTORY_PATH.read_text(encoding="utf-8"))
     # Find today's entry or create new
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    today = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     entry = {"timestamp": today, "pages": {page_name: vitals}}
     history.append(entry)
     # Keep last 50 runs
@@ -37,10 +37,10 @@ def _save_vitals(page_name: str, vitals: dict) -> None:
 
 # Thresholds per Google Core Web Vitals
 VITALS_BUDGET = {
-    "LCP": 2500,   # ms
+    "LCP": 2500,  # ms
     "CLS": 0.1,
-    "FCP": 1800,   # ms
-    "TTFB": 600,   # ms
+    "FCP": 1800,  # ms
+    "TTFB": 600,  # ms
 }
 
 
@@ -84,24 +84,24 @@ VITALS_SCRIPT = """
 async def test_home_page_web_vitals(page: Page):
     """Главная страница должна укладываться в Core Web Vitals."""
     home = HomePage(page)
-    await home.goto(wait_until="networkidle")
+    await home.goto(wait_until="load")
     await home.expect_channels_loaded(timeout=15000)
 
     vitals = await page.evaluate(VITALS_SCRIPT)
     _save_vitals("Главная", vitals)
 
-    assert vitals.get("FCP", float("inf")) < VITALS_BUDGET["FCP"], (
-        f"FCP {vitals.get('FCP')}ms exceeds budget {VITALS_BUDGET['FCP']}ms"
-    )
-    assert vitals.get("LCP", float("inf")) < VITALS_BUDGET["LCP"], (
-        f"LCP {vitals.get('LCP')}ms exceeds budget {VITALS_BUDGET['LCP']}ms"
-    )
-    assert vitals.get("CLS", float("inf")) < VITALS_BUDGET["CLS"], (
-        f"CLS {vitals.get('CLS')} exceeds budget {VITALS_BUDGET['CLS']}"
-    )
-    assert vitals.get("TTFB", float("inf")) < VITALS_BUDGET["TTFB"], (
-        f"TTFB {vitals.get('TTFB')}ms exceeds budget {VITALS_BUDGET['TTFB']}ms"
-    )
+    assert (
+        vitals.get("FCP", float("inf")) < VITALS_BUDGET["FCP"]
+    ), f"FCP {vitals.get('FCP')}ms exceeds budget {VITALS_BUDGET['FCP']}ms"
+    assert (
+        vitals.get("LCP", float("inf")) < VITALS_BUDGET["LCP"]
+    ), f"LCP {vitals.get('LCP')}ms exceeds budget {VITALS_BUDGET['LCP']}ms"
+    assert (
+        vitals.get("CLS", float("inf")) < VITALS_BUDGET["CLS"]
+    ), f"CLS {vitals.get('CLS')} exceeds budget {VITALS_BUDGET['CLS']}"
+    assert (
+        vitals.get("TTFB", float("inf")) < VITALS_BUDGET["TTFB"]
+    ), f"TTFB {vitals.get('TTFB')}ms exceeds budget {VITALS_BUDGET['TTFB']}ms"
 
 
 @pytest.mark.e2e
@@ -110,18 +110,18 @@ async def test_home_page_web_vitals(page: Page):
 async def test_schedule_page_web_vitals(page: Page):
     """Страница расписания должна укладываться в Core Web Vitals."""
     schedule = SchedulePage(page)
-    await schedule.goto(wait_until="networkidle")
+    await schedule.goto(wait_until="load")
     await schedule.wait_for_load("domcontentloaded")
 
     vitals = await page.evaluate(VITALS_SCRIPT)
     _save_vitals("Расписание", vitals)
 
-    assert vitals.get("FCP", float("inf")) < VITALS_BUDGET["FCP"], (
-        f"FCP {vitals.get('FCP')}ms exceeds budget {VITALS_BUDGET['FCP']}ms"
-    )
-    assert vitals.get("LCP", float("inf")) < VITALS_BUDGET["LCP"], (
-        f"LCP {vitals.get('LCP')}ms exceeds budget {VITALS_BUDGET['LCP']}ms"
-    )
-    assert vitals.get("CLS", float("inf")) < VITALS_BUDGET["CLS"], (
-        f"CLS {vitals.get('CLS')} exceeds budget {VITALS_BUDGET['CLS']}"
-    )
+    assert (
+        vitals.get("FCP", float("inf")) < VITALS_BUDGET["FCP"]
+    ), f"FCP {vitals.get('FCP')}ms exceeds budget {VITALS_BUDGET['FCP']}ms"
+    assert (
+        vitals.get("LCP", float("inf")) < VITALS_BUDGET["LCP"]
+    ), f"LCP {vitals.get('LCP')}ms exceeds budget {VITALS_BUDGET['LCP']}ms"
+    assert (
+        vitals.get("CLS", float("inf")) < VITALS_BUDGET["CLS"]
+    ), f"CLS {vitals.get('CLS')} exceeds budget {VITALS_BUDGET['CLS']}"

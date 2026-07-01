@@ -254,7 +254,6 @@ SEVERITY_MAP = {
     "performance": "NORMAL",
     "visual": "MINOR",
     "responsive": "NORMAL",
-    "dark_mode": "NORMAL",
     "cookie": "NORMAL",
     "seo": "NORMAL",
     "footer": "NORMAL",
@@ -271,7 +270,6 @@ FEATURE_MAP = {
     "test_search_edge_cases": "Поиск",
     "test_state_navigation": "Навигация",
     "test_footer_links": "Футер",
-    "test_dark_mode": "Тёмная тема",
     "test_cookie_consent": "Cookie-баннер",
     "test_accessibility": "Доступность",
     "test_error_pages": "Обработка ошибок",
@@ -290,44 +288,49 @@ FEATURE_MAP = {
 }
 
 
-def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
-    """Dynamically add Allure metadata based on file name and markers."""
-    for item in items:
-        if not item.nodeid.startswith("tests/e2e/"):
-            continue
+def _resolve_allure_metadata(item: pytest.Item) -> tuple[str, str, str, str]:
+    """Derive Allure feature/story/title/severity from a test item.
 
-        # Feature from file name
-        module_name = item.module.__name__.split(".")[-1]
-        feature = FEATURE_MAP.get(module_name, "E2E Тесты")
-        item.add_marker(pytest.mark.allure_test(feature))
+    Args:
+        item: Collected pytest test item.
 
-        # Story from test docstring or name
-        story = item.obj.__doc__ or item.name.replace("test_", "").replace("_", " ")
-        story = story.strip().split("\n")[0][:80]
+    Returns:
+        Кортеж (feature, story, title, severity_name).
+    """
+    module_name = item.module.__name__.split(".")[-1]
+    feature = FEATURE_MAP.get(module_name, "E2E Тесты")
 
-        # Severity from markers
-        severity = "NORMAL"
-        for marker in item.iter_markers():
-            if marker.name in SEVERITY_MAP:
-                severity = SEVERITY_MAP[marker.name]
-                break
+    doc = item.obj.__doc__
+    story = (doc or item.name.replace("test_", "").replace("_", " ")).strip().split("\n")[0][:80]
+    title = doc.strip().split("\n")[0][:120] if doc else story
 
-        # Title: use Russian docstring as test display name
-        title = story
-        if item.obj.__doc__:
-            title = item.obj.__doc__.strip().split("\n")[0][:120]
+    severity = "NORMAL"
+    for marker in item.iter_markers():
+        if marker.name in SEVERITY_MAP:
+            severity = SEVERITY_MAP[marker.name]
+            break
 
-        # Apply via dynamic Allure API if available
-        try:
-            import allure
+    return feature, story, title, severity
 
-            allure.dynamic.feature(feature)
-            allure.dynamic.story(story)
-            allure.dynamic.title(title)
-            sev = getattr(allure.severity_level, severity)  # type: ignore[attr-defined]
-            allure.dynamic.severity(sev)
-        except (ImportError, AttributeError):
-            pass
+
+@pytest.fixture(autouse=True)
+def _apply_allure_metadata(request: pytest.FixtureRequest) -> None:
+    """Apply dynamic Allure feature/story/title/severity for the running test.
+
+    Must run during test execution (not collection) — allure.dynamic.* writes
+    into the currently-executing test's context, which does not exist yet at
+    collection time.
+    """
+    item = request.node
+    if not item.nodeid.startswith("tests/e2e/"):
+        return
+
+    feature, story, title, severity = _resolve_allure_metadata(item)
+    allure.dynamic.feature(feature)
+    allure.dynamic.story(story)
+    allure.dynamic.title(title)
+    sev = getattr(allure.severity_level, severity, allure.severity_level.NORMAL)
+    allure.dynamic.severity(sev)
 
 
 @pytest.fixture(autouse=True)
