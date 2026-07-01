@@ -81,7 +81,7 @@ jobs:
           keep_reports: 20
 
       - name: Загрузка страницы как артефакта
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         if: always()
         with:
           path: allure-history
