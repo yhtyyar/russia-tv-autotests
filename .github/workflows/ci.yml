@@ -254,49 +254,49 @@ jobs:
         run: npm install -g allure-commandline
 
       - name: Скачать Allure Results (unit)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: allure-results-unit
           path: allure-results
         continue-on-error: true
 
       - name: Скачать Allure Results (integration)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: allure-results-integration
           path: allure-results
         continue-on-error: true
 
       - name: Скачать Allure Results (e2e chromium)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: allure-results-chromium
           path: allure-results
         continue-on-error: true
 
       - name: Скачать Allure Results (e2e firefox)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: allure-results-firefox
           path: allure-results
         continue-on-error: true
 
       - name: Скачать Allure Results (e2e webkit)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: allure-results-webkit
           path: allure-results
         continue-on-error: true
 
       - name: Скачать Allure Results (e2e yandex)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: allure-results-yandex
           path: allure-results
         continue-on-error: true
 
       - name: Скачать Allure Results (mobile)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: allure-results-mobile
           path: allure-results
@@ -318,7 +318,7 @@ jobs:
           echo "Конфигурация Allure скопирована"
 
       - name: Скачать Performance Dashboard
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: perf-dashboard
           path: perf/
