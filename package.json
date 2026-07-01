@@ -8,15 +8,22 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Tests run via pytest, not npm — see README.md\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yhtyyar/russia-tv-autotests.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "playwright",
+    "pytest",
+    "e2e-testing",
+    "qa-automation",
+    "test-automation",
+    "python"
+  ],
+  "author": "Yhtyyar",
+  "license": "UNLICENSED",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/yhtyyar/russia-tv-autotests/issues"

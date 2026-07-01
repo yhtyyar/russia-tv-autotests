@@ -19,10 +19,32 @@
 **[Allure-отчётность](https://yhtyyar.github.io/russia-tv-autotests/allure/)** — тренды, скриншоты, история прогонов.  
 **[Performance Dashboard](https://yhtyyar.github.io/russia-tv-autotests/perf/)** — Core Web Vitals, история метрик, отклонения.
 
+<p align="center">
+  <a href="https://yhtyyar.github.io/russia-tv-autotests/allure/">
+    <img src="docs/images/allure-report.png" alt="Allure Report — пример живого отчёта" width="800">
+  </a>
+</p>
+
+---
+
+## Возможности
+
+- ✅ **121 тест** — smoke, unit, integration, e2e, mobile
+- ✅ **Page Object Model** с self-healing локаторами (автоматический fallback при поломке селектора)
+- ✅ **Chaos-инжиниринг** — блокировка API/CDN, CPU throttling, офлайн-режим
+- ✅ **Cross-browser** — Chromium, Firefox, WebKit, Яндекс Браузер, BrowserStack/Sauce Labs
+- ✅ **Mobile** — реальная эмуляция устройства (iPhone 14 Pro), а не просто resize вьюпорта
+- ✅ **Визуальная регрессия** — скриншоты с маскированием динамического контента
+- ✅ **Accessibility** — axe-core (WCAG 2.1 AA) + клавиатурная навигация
+- ✅ **Performance budgets** — Core Web Vitals (LCP/CLS/FCP/TTFB) с историей
+- ✅ **Allure + Performance Dashboard** — публикуются на GitHub Pages автоматически
+- ✅ **Docker** — воспроизводимый прогон в контейнере
+
 ---
 
 ## Содержание
 
+- [Возможности](#возможности)
 - [Технологический стек](#технологический-стек)
 - [Архитектура](#архитектура)
 - [Ключевые архитектурные решения](#ключевые-архитектурные-решения)
@@ -39,7 +61,6 @@
 ---
 
 ## Технологический стек
-
 
 | Категория                                  | Технология                                                                  |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------- |
