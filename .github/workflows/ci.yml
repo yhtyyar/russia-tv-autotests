@@ -71,13 +71,13 @@ jobs:
         run: uv run pytest tests/unit/ -v --tb=short --junitxml=reports/junit-unit.xml --alluredir=reports/allure-results
       - name: Загрузка Allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: allure-results-unit
           path: reports/allure-results/
       - name: Загрузка JUnit-отчёта
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: unit-test-results
           path: reports/junit-unit.xml
@@ -99,13 +99,13 @@ jobs:
         run: uv run pytest tests/integration/ -v --tb=short --junitxml=reports/junit-integration.xml --alluredir=reports/allure-results
       - name: Загрузка Allure results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: allure-results-integration
           path: reports/allure-results/
       - name: Загрузка JUnit-отчёта
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: integration-test-results
           path: reports/junit-integration.xml
@@ -148,7 +148,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
       - name: Загрузка результатов Allure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: allure-results-${{ matrix.browser }}
           path: reports/allure-results/
@@ -157,31 +157,31 @@ jobs:
         run: uv run python scripts/generate_perf_dashboard.py
       - name: Загрузка Performance Dashboard
         if: matrix.browser == 'chromium' && always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: perf-dashboard
           path: perf/
       - name: Загрузка скриншотов
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: screenshots-${{ matrix.browser }}
           path: reports/screenshots/
       - name: Загрузка видео
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: videos-${{ matrix.browser }}
           path: reports/videos/
       - name: Загрузка traces
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: traces-${{ matrix.browser }}
           path: reports/traces/
       - name: Загрузка JUnit-отчёта
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit-e2e-${{ matrix.browser }}
           path: reports/junit-e2e.xml
@@ -210,31 +210,31 @@ jobs:
           BROWSER: chromium
       - name: Загрузка результатов Allure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: allure-results-mobile
           path: reports/allure-results/
       - name: Загрузка скриншотов
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: screenshots-mobile
           path: reports/screenshots/
       - name: Загрузка видео
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: videos-mobile
           path: reports/videos/
       - name: Загрузка traces
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: traces-mobile
           path: reports/traces/
       - name: Загрузка JUnit-отчёта
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit-mobile
           path: reports/junit-mobile.xml
